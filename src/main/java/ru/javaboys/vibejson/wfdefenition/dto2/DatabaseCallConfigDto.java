@@ -1,22 +1,21 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.util.Map;
 
 
 @Data
 public class DatabaseCallConfigDto {
 
-    @NotNull
     @Valid
-    private DatabaseConnectionDefDto connectionDef;
+    private DatabaseCallDefDto databaseCallDef;
 
-    @NotBlank
+    @Valid
+    private DataSourceDefDto dataSourceDef;
+
     private String sql;
 
-    private Map<String, String> parameters;
+    private String type;
+
+    private Object parameters;
 }
