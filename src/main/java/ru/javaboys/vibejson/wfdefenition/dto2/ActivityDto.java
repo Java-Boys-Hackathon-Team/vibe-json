@@ -44,4 +44,6 @@ public class ActivityDto {
     private String timerDuration;
 
     private Object outputFilter;
+
+    private BranchDto defaultCondition;
 }

@@ -59,4 +59,18 @@ public class WorkflowDeserializationTest {
         assertJsonMatchesDto(file, WorkflowDefinitionDto.class);
     }
 
+    @Test
+    @DisplayName("wf-4.json должен корректно десериализоваться в WorkflowDefinitionDto")
+    public void testWf4Json() {
+        File file = new File("src/test/resources/workflows/wf-4.json");
+        assertJsonMatchesDto(file, WorkflowDefinitionDto.class);
+    }
+
+    @Test
+    @DisplayName("wf-5.json должен корректно десериализоваться в WorkflowDefinitionDto")
+    public void testWf5Json() {
+        File file = new File("src/test/resources/workflows/wf-5.json");
+        assertJsonMatchesDto(file, WorkflowDefinitionDto.class);
+    }
+
 }
