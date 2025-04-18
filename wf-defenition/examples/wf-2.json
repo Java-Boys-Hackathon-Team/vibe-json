@@ -1,0 +1,282 @@
+{
+  "name": "name",
+  "type": "complex",
+  "description": "",
+  "compiled": {
+    "activities": [
+      {
+        "id": "activity-8",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "transform",
+            "details": {
+              "transformConfig": {
+                "type": "json_to_xml",
+                "target": {
+                  "sap_xml_modified": "jp{sap_json_modified}"
+                }
+              }
+            }
+          }
+        },
+        "transition": "activity-14"
+      },
+      {
+        "id": "activity-13",
+        "type": "workflow_call",
+        "description": "zup-mis",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "rest_call",
+            "details": {
+              "restCallConfig": {
+                "restCallTemplateDef": {
+                  "curl": "curl -L 'http://wiremock:8080/zup-mis/123' -H 'Content-Type: application/json' -d '{\r\n \"status\": 200,\r\n \"headers\": {\r\n\"Content-Type\": \"application/json\"\r\n }\r\n }'"
+                }
+              },
+              "outputValidateSchema": {
+                "type": "string",
+                "stringFormat": "xml"
+              }
+            }
+          }
+        },
+        "transition": "activity-15",
+        "outputFilter": {
+          "body": "jp{body.xmI}"
+        }
+      },
+      {
+        "id": "activity-14",
+        "type": "workflow_call",
+        "description": "Отправка результата",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "rest_call",
+            "details": {
+              "restCallConfig": {
+                "restCallTemplateDef": {
+                  "method": "POST",
+                  "bodyTemplate": "jp{sap_xml_modified }",
+                  "url": "http://wiremock:8080/medialog/post",
+                  "headers": {
+                    "Content-Type": "application/json"
+                  },
+                  "authDef": {
+                    "type": "oauth2",
+                    "oauth2": {
+                      "grantType": "client_credentials"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "activity-15",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "transform",
+            "details": {
+              "transformConfig": {
+                "type": "xml_to_json",
+                "target": {
+                  "sap_json": "jp{sap_xml}",
+                  "mis_json": "jp{mis_xml}"
+                }
+              }
+            }
+          }
+        },
+        "transition": "activity-8",
+        "outputFilter": {
+          "sap_json_modified": "lua{\r\nlocal sap = wf.vars.sap_json; \r\nlocal mis = wf.vars.mis_json;\r\n\r\nfunction findPerson(persons, uid)\r\n for k, v in pairs(persons) do\r\n\tif(v.guidPerson == uid) then\r\n\t return v;\r\n\tend\r\n end\r\nend \r\nif(mis ~= nil) then\r\n local newTranz = mis['ТранзакцияНовая'];\r\n if(newTranz ~= nill) then\r\n for k, v in pairs(mis['ТранзакцияНовая']) do\r\n if(v ~= nill) then\r\n local fiz =v['ФизлицоУИД'];\r\n\t if(fiz ~= nill) then\r\n local uid = fiz[''];\r\n local misSnils = v['СНИЛС'][''];\r\n local person = findPerson(sap.Person,uid);\r\n if(person ~= nil) then \r\n\t person.SNILS = misSnils;\r\n end\t\r\n\t end\r\n\t end\r\n end \r\n end\r\nend\r\nreturn sap;\r\n}lua"}
+      },
+      {
+        "id": "activity-16",
+        "type": "workflow_call",
+        "description": "Отправка в SAP",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_sap",
+            "details": {
+              "sendToSapConfig": {
+                "connectionDef": {
+                  "props": {
+                    "jco.client.lang": "EN",
+                    "jco.client.passwd": "123",
+                    "jco.client.sysnr": 10,
+                    "jco.destination.pool_capacity": 3,
+                    "jco.destination.peak_limit": 10,
+                    "jco.client.client": 400,
+                    "jco.client.user": "user",
+                    "jco.client.ashost": "test.ru"
+                  }
+                },
+                "idoc": {
+                  "xml": "jp{sap_xml}"
+                }
+              }
+            }
+          }
+        },
+        "transition": null
+      },
+      {
+        "id": "activity-17",
+        "type": "parallel",
+        "description": "",
+        "branches": [
+          "activity-13",
+          "activity-16"
+        ],
+        "completionType": "anyOf"
+      }
+    ],
+    "start": "activity-17"
+  },
+  "flowEditorConfig": {
+    "startMetadata": {
+      "position": {
+        "x": 34,
+        "y": 104
+      },
+      "isDeveloperMode": false,
+      "isDeveloperModeVerify": false,
+      "isDeveloperModeError": false,
+      "developerModeErrors": []
+    },
+    "activityMetadata": {
+      "activity-8": {
+        "position": {
+          "x": 824.5,
+          "y": 42
+        },
+        "mock": {
+          "data": {}
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-13": {
+        "position": {
+          "x": 406.5,
+          "y": 42
+        },
+        "mock": {
+          "data": {
+            "bodyExample": {},
+            "bodySchema": {},
+            "headers": {}
+          }
+        },
+        "ims": [
+          ""
+        ],
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-14": {
+        "position": {
+          "x": 1033.5,
+          "y": 42
+        },
+        "mock": {
+          "data": {
+            "bodyExample": {},
+            "bodySchema": {},
+            "headers": {}
+          }
+        },
+        "ims": [
+          ""
+        ],
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-15": {
+        "position": {
+          "x": 615.5,
+          "y": 42
+        },
+        "mock": {
+          "data": {}
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-16": {
+        "position": {
+          "x": 406.5,
+          "y": 166
+        },
+        "mock": {
+          "data": {}
+        },
+        "ims": [
+          ""
+        ],
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-17": {
+        "position": {
+          "x": 197.5,
+          "y": 104
+        },
+        "mock": {
+          "data": {}
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      }
+    },
+    "horizontalLayout": true
+  },
+  "details": {
+    "inputValidateSchema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "properties": {
+        "mis_xml": {
+          "type": "string",
+          "stringFormat": "xml"
+        },
+        "sap_xml": {
+          "type": "string",
+          "stringFormat": "xml"
+        },
+        "sap_idoc": {
+          "type": "string",
+          "stringFormat": "xml"
+        }
+      },
+      "required": [
+        "sap_xml"
+      ]
+    },
+    "starters": [
+      {
+        "type": "rest_call"
+      }
+    ]
+  }
+}
