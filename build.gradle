@@ -43,6 +43,9 @@ dependencies {
     testImplementation 'io.jmix.flowui:jmix-flowui-test-assist'
     implementation 'io.jmix.translations:jmix-translations-ru'
     implementation 'org.postgresql:postgresql'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 configurations.implementation {
