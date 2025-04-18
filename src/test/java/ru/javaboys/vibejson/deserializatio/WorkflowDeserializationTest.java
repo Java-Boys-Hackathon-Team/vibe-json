@@ -2,6 +2,7 @@ package ru.javaboys.vibejson.deserializatio;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.javaboys.vibejson.wfdefenition.dto2.WorkflowDefinitionDto;
@@ -24,8 +25,16 @@ public class WorkflowDeserializationTest {
     private <T> void assertJsonMatchesDto(File jsonFile, Class<T> dtoClass) {
         try {
             objectMapper.readValue(jsonFile, dtoClass);
+        } catch (UnrecognizedPropertyException e) {
+            String shortMessage = String.format(
+                    "❌ В файле [%s] обнаружено неизвестное поле: \"%s\" в классе [%s]",
+                    jsonFile.getName(),
+                    e.getPropertyName(),
+                    e.getReferringClass().getSimpleName()
+            );
+            fail(shortMessage);
         } catch (IOException e) {
-            fail("Не удалось десериализовать файл " + jsonFile.getName() + ": " + e.getMessage(), e);
+            fail("❌ Ошибка при десериализации " + jsonFile.getName() + ": " + e.getMessage());
         }
     }
 
