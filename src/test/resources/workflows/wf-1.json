@@ -1,0 +1,435 @@
+{
+  "type": "complex",
+  "name": "MaxActivitiShema",
+  "description": "Схема содержит основные типы активити, исключая: SAP, send_to_sap, await_for_message",
+  "details": {
+    "inputValidateSchema": {},
+    "starters": [
+      {
+        "type": "rest_call"
+      }
+    ]
+  },
+  "compiled": {
+    "activities": [
+      {
+        "type": "inject",
+        "description": "inject try_count = 0",
+        "injectData": {
+          "try_count": 0,
+          "applicationId": "35639557-4fb3-4501-ad0b-f45db3356395"
+        },
+        "id": "activity-1",
+        "transition": "activity-2"
+      },
+      {
+        "id": "activity-2",
+        "type": "workflow_call",
+        "description": "Получение статуса executor-solved от SD",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "rest_call",
+            "details": {
+              "restCallConfig": {
+                "restCallTemplateDef": {
+                  "curl": "curl -L 'https://test.ru/api/v1/wf/search' -H 'accept: */*' -H 'Content-Type: application/json' -d '{\n \"name\":\"MaxActivitiShema\",\n \"offset\": 0,\n \"limit\": 25\n}'",
+                  "authDef": {
+                    "type": "oauth2",
+                    "oauth2": {
+                      "issuerLocation": "https://isso.mts.ru/auth/realms/mts",
+                      "clientId": "clientId",
+                      "clientSecret": "clientSecret",
+                      "grantType": "client_credentials"
+                    }
+                  }
+                }
+              },
+              "outputValidateSchema": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "tenantId": {
+                        "type": "string"
+                      },
+                      "createTime": {
+                        "type": "string"
+                      },
+                      "changeTime": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "ownerLogin": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name",
+                      "description",
+                      "tenantId",
+                      "status"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "retryConfig": {}
+        },
+        "outputFilter": {
+          "sd_body": "jp{$.body}",
+          "sd_status": "jp{$.body[0].status}",
+          "wf_id": "jp{$.body[0].id}"
+        },
+        "transition": "activity-16"
+      },
+      {
+        "id": "activity-11",
+        "type": "parallel",
+        "description": "",
+        "branches": [
+          "activity-12",
+          "activity-13"
+        ],
+        "completionType": "anyOf",
+        "transition": "activity-14"
+      },
+      {
+        "id": "activity-12",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "rest_call",
+            "details": {
+              "restCallConfig": {
+                "restCallTemplateDef": {
+                  "curl": "curl -L 'https://test.ru/api/v1/jp{wf_id}' -H 'accept: application/json'",
+                  "authDef": {
+                    "type": "oauth2",
+                    "oauth2": {
+                      "issuerLocation": "https://isso.mts.ru/auth/realms/mts",
+                      "clientId": "clientId",
+                      "clientSecret": "clientSecret",
+                      "grantType": "client_credentials"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transition": null
+      },
+      {
+        "id": "activity-13",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_kafka",
+            "details": {
+              "sendToKafkaConfig": {
+                "topic": "testing",
+                "key": "jp{sd_status}",
+                "message": {
+                  "payload": {
+                    "description": "Тестовое сообщение от НТ",
+                    "field1": "jp{sd_status}",
+                    "field2": "jp{sd_body}"
+                  }
+                },
+                "connectionDef": {
+                  "bootstrapServers": "bootstrap.kafka.ru:443",
+                  "authDef": {
+                    "type": "SASL",
+                    "sasl": {
+                      "protocol": "SASL_SSL",
+                      "mechanism": "SCRAM-SHA-512",
+                      "username": "username",
+                      "password": "password",
+                      "sslDef": {
+                        "trustStoreType": "PEM",
+                        "trustStoreCertificates": "-----BEGIN CERTIFICATE-----\nMIIGVjCCBD6g----END CERTIFICATE-----"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transition": null
+      },
+      {
+        "id": "activity-14",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_s3",
+            "details": {
+              "sendToS3Config": {
+                "bucket": "bucket1",
+                "region": "ru-1",
+                "s3File": {
+                  "filePath": "loadTestFile.txt",
+                  "content": "jp{sd_body}"
+                },
+                "connectionDef": {
+                  "endpoint": "https://s3.ru",
+                  "authDef": {
+                    "type": "accessKey",
+                    "accessKeyAuth": {
+                      "accessKey": "accessKey",
+                      "secretKey": "secretKey"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transition": "activity-15"
+      },
+      {
+        "id": "activity-15",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_rabbitmq",
+            "details": {
+              "sendToRabbitmqConfig": {
+                "connectionDef": {
+                  "virtualHost": "/",
+                  "addresses": [
+                    "11.111.111.111:5672"
+                  ],
+                  "userName": "userName",
+                  "userPass": "userPass"
+                },
+                "exchange": "amq.direct",
+                "routingKey": "testq",
+                "message": "jp{sd_body}",
+                "messageProperties": {
+                  "contentType": "application/xml",
+                  "priority": "2",
+                  "contentEncoding": "gzip",
+                  "headers": {
+                    "x-message-ttl": 60000,
+                    "key3": true
+                  },
+                  "replyTo": "419519_replyTo",
+                  "expiration": 419519,
+                  "messageId": "419519_messageId",
+                  "type": "419519_type",
+                  "userId": "guest",
+                  "appId": "419519_appId",
+                  "clusterId": "419519_clusterId"
+                }
+              }
+            }
+          }
+        },
+        "transition": "activity-17"
+      },
+      {
+        "id": "activity-16",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "db_call",
+            "details": {
+              "databaseCallConfig": {
+                "databaseCallDef": {
+                  "type": "select",
+                  "sql": "SELECT id, type, name, tenant_id, description, create_time, ver, convert_from(lo_get(compiled),'UTF8') as convert_from_compiled, convert_from(lo_get(details),'UTF8') as convert_from_details FROM ss_workflow_engine.definition d where name ='MaxActivitiShema';"
+                },
+                "dataSourceDef": {
+                  "className": "org.postgresql.Driver",
+                  "url": "jdbc:postgresql://ip.test:5432/ss_workflow_engine",
+                  "userName": "userName",
+                  "userPass": "userPass"
+                }
+              }
+            }
+          }
+        },
+        "transition": "activity-11"
+      },
+      {
+        "id": "activity-17",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "transform",
+            "details": {
+              "transformConfig": {
+                "type": "json_to_xml",
+                "target": {
+                  "xml": {
+                    "idoc_json": "jp{sd_body}"
+                  }
+                }
+              }
+            }
+          },
+          "retryConfig": {}
+        }
+      }
+    ],
+    "start": "activity-1"
+  },
+  "flowEditorConfig": {
+    "startMetadata": {
+      "position": {
+        "x": 34,
+        "y": 77
+      }
+    },
+    "activityMetadata": {
+      "activity-1": {
+        "position": {
+          "x": 197.5,
+          "y": 77
+        },
+        "mock": {
+          "data": {}
+        }
+      },
+      "activity-2": {
+        "position": {
+          "x": 406.5,
+          "y": 77
+        },
+        "mock": {
+          "data": {
+            "bodyExample": {},
+            "bodySchema": {},
+            "headers": {}
+          }
+        },
+        "ims": [
+          ""
+        ]
+      },
+      "activity-11": {
+        "position": {
+          "x": 824.5,
+          "y": 77
+        },
+        "mock": {
+          "data": {}
+        }
+      },
+      "activity-12": {
+        "position": {
+          "x": 1033.5,
+          "y": 26
+        },
+        "mock": {
+          "data": {
+            "bodyExample": {},
+            "bodySchema": {},
+            "headers": {}
+          }
+        },
+        "ims": [
+          ""
+        ]
+      },
+      "activity-13": {
+        "position": {
+          "x": 1033.5,
+          "y": 128
+        },
+        "mock": {
+          "data": {}
+        },
+        "ims": [
+          ""
+        ]
+      },
+      "activity-14": {
+        "position": {
+          "x": 1242.5,
+          "y": 77
+        },
+        "mock": {
+          "data": {}
+        },
+        "ims": [
+          ""
+        ]
+      },
+      "activity-15": {
+        "position": {
+          "x": 1451.5,
+          "y": 77
+        },
+        "mock": {
+          "data": {}
+        },
+        "ims": [
+          ""
+        ]
+      },
+      "activity-16": {
+        "position": {
+          "x": 607.6274752475248,
+          "y": 84.71533197437392
+        },
+        "mock": {
+          "data": {
+            "resultList": []
+          }
+        },
+        "ims": [
+          ""
+        ]
+      },
+      "activity-17": {
+        "position": {
+          "x": 1665.0660376799588,
+          "y": 77.01318922121393
+        },
+        "mock": {
+          "data": {}
+        }
+      },
+      "activity-18": {
+        "position": {
+          "x": 1896.2057296248076,
+          "y": 78.06951389473056
+        },
+        "mock": {
+          "data": {}
+        }
+      }
+    },
+    "horizontalLayout": true
+  }
+}

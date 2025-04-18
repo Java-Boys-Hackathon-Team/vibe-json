@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class SapInboundDefDto {
 
@@ -14,6 +16,6 @@ public class SapInboundDefDto {
     private SapConnectionDefDto connectionDef;
 
     @Valid
-    private SapServerPropsDto props;
+    private Map<String, String> props;
 }
 

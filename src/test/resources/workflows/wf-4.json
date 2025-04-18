@@ -1,0 +1,122 @@
+{
+  "name": "Kafka-kafka",
+  "type": "complex",
+  "description": "Перекладывание сообщений из кафки в кафку",
+  "compiled": {
+    "activities": [
+      {
+        "id": "activity-1",
+        "type": "workflow_call",
+        "description": "",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_kafka",
+            "details": {
+              "sendToKafkaConfig": {
+                "topic": "45",
+                "key": "",
+                "message": {
+                  "payload": "jp{payload}"
+                },
+                "connectionDef": {
+                  "bootstrapServers": "bootstrap.kafka.ru:443",
+                  "authDef": {
+                    "type": "SASL",
+                    "sasl": {
+                      "protocol": "SASL_SSL",
+                      "mechanism": "OAUTHBEARER",
+                      "username": "",
+                      "password": "",
+                      "sslDef": {
+                        "trustStoreType": "PEM",
+                        "trustStoreCertificates": ""
+                      },
+                      "tokenUrl": "https://isso.mts.ru/auth/"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "start": "activity-1"
+  },
+  "flowEditorConfig": {
+    "startMetadata": {
+      "position": {
+        "x": 34,
+        "y": 34
+      },
+      "ims": [
+        "7b598ae7-17c8-416f-a491-3991ff8f5d3a"
+      ],
+      "isDeveloperMode": false,
+      "isDeveloperModeVerify": false,
+      "isDeveloperModeError": false,
+      "developerModeErrors": []
+    },
+    "activityMetadata": {
+      "activity-1": {
+        "position": {
+          "x": 197.5,
+          "y": 34
+        },
+        "mock": {
+          "data": {
+            "result": {}
+          }
+        },
+        "ims": [
+          ""
+        ],
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      }
+    },
+    "horizontalLayout": true
+  },
+  "details": {
+    "inputValidateSchema": {
+      "type": "object",
+      "required": [
+        "payload"
+      ],
+      "properties": {
+        "payload": {
+          "type": "object"
+        }
+      }
+    },
+    "starters": [
+      {
+        "name": "Kafka-kafka-KION",
+        "type": "kafka_consumer",
+        "kafkaConsumer": {
+          "topic": "rtk-kion",
+          "connectionDef": {
+            "bootstrapServers": "11.111.111.11:9094",
+            "authDef": {
+              "type": "TLS",
+              "tls": {
+                "trustStoreType": "PEM",
+                "trustStoreCertificates": "",
+                "keyStoreKey": "",
+                "keyStoreCertificates": ""
+              }
+            }
+          },
+          "payloadValidateSchema": {},
+          "keyValidateSchema": {},
+          "headersValidateSchema": {},
+          "outputTemplate": {
+            "payload": "jp{payload}"
+          }
+        }
+      }
+    ]
+  }
+}

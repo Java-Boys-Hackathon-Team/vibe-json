@@ -1,7 +1,6 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Map;
@@ -10,8 +9,9 @@ import java.util.Map;
 public class TransformConfigDto {
 
     @NotBlank
-    private String type; // xml_to_json, json_to_xml, xslt и т.д.
+    private String type;
 
-    @NotNull
-    private Map<String, String> target;
+    private Map<String, Object> source;
+
+    private Map<String, Object> target;
 }

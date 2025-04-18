@@ -2,40 +2,48 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class ActivityDto {
 
     @NotBlank
+    @Size(max = 255)
     private String id;
 
     @NotBlank
+    @Size(max = 255)
     private String type;
 
+    @Size(max = 255)
     private String description;
 
-    // ID следующей activity или null
     private String transition;
 
-    // ========================
-    // Тип-зависимые поля:
-    // ========================
     @Valid
-    private InjectDataDto injectData;
+    private List<DataConditionDto> dataConditions;
+
+    @Valid
+    private DefaultDataTransitionDto defaultTransition;
+
+    @Valid
+    private Map<String, Object> injectData;
 
     @Valid
     private WorkflowCallDto workflowCall;
 
-    @Valid
-    private ParallelDto parallel;
+    private List<@NotBlank @Size(max = 255) String> branches;
 
-    @Valid
-    private SwitchDto switchCondition;
+    private String completionType;
 
-    @Valid
-    private TimerDto timer;
+    @Size(max = 256)
+    private String timerDuration;
 
-    // outputFilter — используется в некоторых типах
     private Object outputFilter;
+
+    private BranchDto defaultCondition;
 }

@@ -1,0 +1,222 @@
+{
+  "name": "Campaign",
+  "type": "complex",
+  "description": "",
+  "compiled": {
+    "activities": [
+      {
+        "id": "activity-4",
+        "type": "workflow_call",
+        "description": "Статус просмотра",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "await_for_message",
+            "details": {
+              "awaitForMessageConfig": {
+                "messageName": "status"
+              }
+            }
+          }
+        },
+        "transition": "activity-6"
+      },
+      {
+        "id": "activity-5",
+        "type": "inject",
+        "description": "Обработка статусов",
+        "transition": "activity-12",
+        "injectData": {
+          "email200": "lua{\r\nfunction sort_by_last_status(data)\r\n local sorted = {} \r\n local result = {ok={}}\r\n for _, status in ipairs(data.status) do \r\n for _, item in pairs(status.items) do \r\n local destination = item.destination\r\n local status = item.status \r\n if not sorted[destination] or status > sorted[destination] then\r\n sorted[destination] = status\r\n end\r\n end\r\n end \r\n for e, s in pairs(sorted) do \r\n if s > 199 and s < 300 then\r\n table.insert(result.ok, {email=e})\r\n end\r\n end \r\n return result\r\nend \r\n\r\nif wf.consumedMessages == nil then\r\n return {ok={}}\r\nend\r\nreturn sort_by_last_status(wf.consumedMessages)\r\n}lua"
+      }
+    },
+      {
+        "id": "activity-6",
+        "type": "timer",
+        "description": "",
+        "timerDuration": "P0DT0H2M0S",
+        "transition": "activity-5"
+      },
+      {
+        "id": "activity-11",
+        "type": "inject",
+        "description": "",
+        "transition": "activity-4",
+        "injectData": {
+          "subscribers": [
+            {
+              "email": "mazuyev1@mts.ru"
+            },
+            {
+              "email": "mazuyev2@mts.ru"
+            },
+            {
+              "email": "mazuyev3@mts.ru"
+            },
+            {
+              "email": "mazuyev4@mts.ru"
+            }
+          ]
+        }
+      },
+      {
+        "id": "activity-12",
+        "description": "",
+        "type": "switch",
+        "dataConditions": [
+          {
+            "transition": "activity-14",
+            "condition": "lua{return next(wf.vars.email200.ok) ~= nil}lua\r\n",
+            "conditionDescription": ""
+          }
+        ],
+        "defaultCondition": {
+          "transition": "activity-13"
+        }
+      },
+      {
+        "id": "activity-13",
+        "type": "inject",
+        "description": "",
+        "injectData": {
+          "email": "Очистить"
+        }
+      },
+      {
+        "id": "activity-14",
+        "type": "inject",
+        "description": "",
+        "injectData": {
+          "email": "Ок"
+        }
+      }
+    ],
+    "start": "activity-11"
+  },
+  "flowEditorConfig": {
+    "startMetadata": {
+      "position": {
+        "x": 184,
+        "y": 34
+      },
+      "isDeveloperMode": false,
+      "isDeveloperModeVerify": false,
+      "isDeveloperModeError": false,
+      "developerModeErrors": []
+    },
+    "activityMetadata": {
+      "activity-4": {
+        "position": {
+          "x": 184,
+          "y": 306
+        },
+        "mock": {
+          "data": {
+            "message": {}
+          }
+        },
+        "ims": [
+          ""
+        ],
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-5": {
+        "position": {
+          "x": 184,
+          "y": 574
+        },
+        "mock": {
+          "data": {
+            "result": {}
+          }
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-6": {
+        "position": {
+          "x": 184,
+          "y": 440
+        },
+        "mock": {
+          "data": {}
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-11": {
+        "position": {
+          "x": 184,
+          "y": 162
+        },
+        "mock": {
+          "data": {
+            "result": {}
+          }
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-12": {
+        "position": {
+          "x": 184,
+          "y": 700
+        },
+        "mock": {
+          "data": {}
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-13": {
+        "position": {
+          "x": 288.5,
+          "y": 820
+        },
+        "mock": {
+          "data": {
+            "result": {}
+          }
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      },
+      "activity-14": {
+        "position": {
+          "x": 79.5,
+          "y": 820
+        },
+        "mock": {
+          "data": {
+            "result": {}
+          }
+        },
+        "isDeveloperMode": false,
+        "isDeveloperModeVerify": false,
+        "isDeveloperModeError": false,
+        "developerModeErrors": []
+      }
+    },
+    "horizontalLayout": false
+  },
+  "details": {
+    "inputValidateSchema": {},
+    "starters": [
+      {
+        "type": "rest_call"
+      }
+    ]
+  }
+}

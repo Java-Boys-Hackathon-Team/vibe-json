@@ -1,0 +1,232 @@
+{
+  "type": "complex",
+  "name": "OrderProcessingWorkflow",
+  "description": "Обработка заказов через REST, Kafka, SAP и т.д.",
+  "version": 1,
+  "tenantId": "default",
+  "details": {
+    "inputValidateSchema": {
+      "type": "object",
+      "required": ["orderId"]
+    },
+    "outputValidateSchema": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" }
+      }
+    },
+    "starters": [
+      {
+        "type": "rest_call",
+        "name": "OrderCreatedTrigger",
+        "description": "Запускается при создании заказа",
+        "kafkaConsumer": {
+          "topic": "orders",
+          "connectionDef": {
+            "bootstrapServers": "kafka.local:9092",
+            "authDef": {
+              "type": "SASL",
+              "sasl": {
+                "protocol": "SASL_SSL",
+                "mechanism": "SCRAM-SHA-512",
+                "username": "kafka-user",
+                "password": "secret",
+                "sslDef": {
+                  "trustStoreType": "JKS",
+                  "trustStoreCertificates": "cert-string"
+                },
+                "tokenUrl": "https://auth.local/token"
+              },
+              "tls": null
+            }
+          },
+          "payloadValidateSchema": {},
+          "keyValidateSchema": {},
+          "headersValidateSchema": {},
+          "outputTemplate": {}
+        }
+      }
+    ],
+    "sendToKafkaConfig": {
+      "topic": "processed-orders",
+      "key": "orderId",
+      "message": {
+        "payload": {
+          "orderId": 123,
+          "status": "processed"
+        }
+      },
+      "connectionDef": {
+        "bootstrapServers": "kafka.local:9092",
+        "authDef": {
+          "type": "SASL",
+          "sasl": {
+            "protocol": "SASL_SSL",
+            "mechanism": "SCRAM-SHA-512",
+            "username": "kafka-user",
+            "password": "secret",
+            "sslDef": {
+              "trustStoreType": "JKS",
+              "trustStoreCertificates": "cert-string"
+            },
+            "tokenUrl": "https://auth.local/token"
+          },
+          "tls": null
+        }
+      }
+    },
+    "sendToS3Config": {
+      "bucket": "orders-backup",
+      "region": "eu-west-1",
+      "s3File": {
+        "filePath": "orders/123.json",
+        "content": "{ \"orderId\": 123 }"
+      },
+      "connectionDef": {
+        "endpoint": "https://s3.amazonaws.com",
+        "authDef": {
+          "type": "accessKey",
+          "accessKeyAuth": {
+            "accessKey": "AKIAEXAMPLE",
+            "secretKey": "SECRET"
+          }
+        }
+      }
+    },
+    "restCallConfig": {
+      "restCallTemplateDef": {
+        "curl": null,
+        "method": "POST",
+        "url": "https://api.example.com/notify",
+        "bodyTemplate": "{ \"message\": \"Order processed\" }",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "authDef": {
+          "type": "oauth2",
+          "oauth2": {
+            "issuerLocation": "https://auth.example.com",
+            "clientId": "client-id",
+            "clientSecret": "client-secret",
+            "grantType": "client_credentials"
+          }
+        }
+      }
+    },
+    "xsltTransformConfig": {},
+    "databaseCallConfig": {
+      "connectionDef": {
+        "url": "jdbc:postgresql://localhost:5432/orders",
+        "username": "dbuser",
+        "password": "dbpass",
+        "driverClassName": "org.postgresql.Driver"
+      },
+      "sql": "UPDATE orders SET status = 'processed' WHERE id = :orderId",
+      "parameters": {
+        "orderId": "123"
+      }
+    },
+    "sendToRabbitmqConfig": {
+      "connectionDef": {
+        "userName": "rmq-user",
+        "userPass": "rmq-pass",
+        "addresses": ["rabbitmq.local:5672"],
+        "virtualHost": "/"
+      },
+      "exchange": "order-exchange",
+      "routingKey": "order.processed",
+      "message": "{\"orderId\": 123, \"status\": \"processed\"}",
+      "messageProperties": {
+        "contentType": "application/json",
+        "priority": 1
+      }
+    },
+    "awaitForMessageConfig": {
+      "messageName": "external-confirmation"
+    },
+    "sendToSapConfig": {
+      "connectionDef": {
+        "name": "sap-conn",
+        "props": {
+          "jcoClientLang": "EN",
+          "jcoClientPasswd": "sap-pass",
+          "jcoClientUser": "sap-user",
+          "jcoClientAshost": "sap-host",
+          "jcoClientSysnr": 0,
+          "jcoClientClient": 100,
+          "jcoDestinationPoolCapacity": 10,
+          "jcoDestinationPeakLimit": 20
+        }
+      },
+      "idoc": {
+        "xml": "<idoc><order>123</order></idoc>"
+      }
+    }
+  },
+  "compiled": {
+    "start": "start-activity",
+    "activities": [
+      {
+        "id": "start-activity",
+        "type": "inject_data",
+        "description": "Начало",
+        "transition": "rest-call-activity",
+        "injectData": {
+          "data": {
+            "orderId": 123
+          }
+        }
+      },
+      {
+        "id": "rest-call-activity",
+        "type": "rest_call",
+        "description": "Уведомление REST",
+        "transition": null,
+        "workflowCall": {
+          "workflowDef": {
+            "type": "rest_call",
+            "details": {
+              "restCallConfig": {
+                "restCallTemplateDef": {
+                  "method": "POST",
+                  "url": "https://api.local",
+                  "bodyTemplate": "{\"message\": \"processed\"}",
+                  "headers": {
+                    "Content-Type": "application/json"
+                  },
+                  "authDef": {
+                    "type": "oauth2",
+                    "oauth2": {
+                      "issuerLocation": "https://auth.local",
+                      "clientId": "cid",
+                      "clientSecret": "sec",
+                      "grantType": "client_credentials"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "retryConfig": null,
+          "outputFilter": {}
+        }
+      }
+    ],
+    "outputTemplate": {
+      "result": "ok"
+    }
+  },
+  "flowEditorConfig": {
+    "startMetadata": {
+      "x": 0,
+      "y": 0
+    },
+    "activityMetadata": {
+      "rest-call-activity": {
+        "x": 200,
+        "y": 0
+      }
+    },
+    "horizontalLayout": true
+  }
+}
