@@ -1,0 +1,12 @@
+package ru.javaboys.vibejson.llm.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
+import java.util.ArrayList;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class GPTModelsDTO {
+    private ArrayList<GPTModelDTO> data;
+}
