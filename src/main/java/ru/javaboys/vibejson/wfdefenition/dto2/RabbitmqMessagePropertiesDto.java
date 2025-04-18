@@ -1,5 +1,6 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.Map;
@@ -18,4 +19,10 @@ public class RabbitmqMessagePropertiesDto {
     private String replyTo;
 
     private String expiration;
+
+    @Size(max = 255)
+    private String messageId;
+
+    @Size(max = 255)
+    private String type;
 }

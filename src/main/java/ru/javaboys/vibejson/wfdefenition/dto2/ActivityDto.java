@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ActivityDto {
@@ -30,7 +31,7 @@ public class ActivityDto {
     private DefaultDataTransitionDto defaultTransition;
 
     @Valid
-    private InjectDataDto injectData;
+    private Map<String, Object> injectData;
 
     @Valid
     private WorkflowCallDto workflowCall;

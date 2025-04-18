@@ -2,9 +2,17 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class WorkflowDetailsDto {
 
+    // Добавляем эти два поля:
+    private Map<String, Object> inputValidateSchema;
+
+    private Map<String, Object> outputValidateSchema;
+
+    // Примитивы
     private RestCallConfigDto restCallConfig;
 
     private SendToKafkaConfigDto sendToKafkaConfig;
@@ -12,6 +20,8 @@ public class WorkflowDetailsDto {
     private SendToS3ConfigDto sendToS3Config;
 
     private SendToSapConfigDto sendToSapConfig;
+
+    private SendToRabbitmqConfigDto sendToRabbitmqConfig;
 
     private TransformConfigDto transformConfig;
 
