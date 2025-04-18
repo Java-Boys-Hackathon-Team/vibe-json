@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.deserializatio;
+package ru.javaboys.vibejson.deserialization;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
