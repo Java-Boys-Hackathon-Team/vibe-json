@@ -23,26 +23,24 @@ public class ActivityDto {
 
     private String transition;
 
-    // inject
+    @Valid
+    private List<DataConditionDto> dataConditions;
+
+    @Valid
+    private DefaultDataTransitionDto defaultTransition;
+
     @Valid
     private InjectDataDto injectData;
 
-    // workflow_call
     @Valid
     private WorkflowCallDto workflowCall;
 
-    // switch
-    @Valid
-    private SwitchDto switchCondition;
-
-    // parallel
     private List<@NotBlank @Size(max = 255) String> branches;
+
     private String completionType;
 
-    // timer
     @Size(max = 256)
     private String timerDuration;
 
-    // outputFilter (опционально)
     private Object outputFilter;
 }
