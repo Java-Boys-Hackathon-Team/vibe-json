@@ -1,9 +1,10 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.util.Map;
 
 @Data
 public class SapConnectionDefDto {
@@ -11,6 +12,5 @@ public class SapConnectionDefDto {
     @NotBlank
     private String name;
 
-    @Valid
-    private SapClientPropsDto props;
+    private Map<String, String> props;
 }
