@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.llm.dto;
+package ru.javaboys.vibejson.llm.mws.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

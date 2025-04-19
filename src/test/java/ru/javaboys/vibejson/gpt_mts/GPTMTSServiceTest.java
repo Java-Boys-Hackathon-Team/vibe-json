@@ -5,11 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.javaboys.vibejson.llm.dto.ChatCompletionRequestDTO;
-import ru.javaboys.vibejson.llm.dto.ChatCompletionResponseDTO;
-import ru.javaboys.vibejson.llm.dto.GPTModelListDTO;
-import ru.javaboys.vibejson.llm.dto.MessageDTO;
-import ru.javaboys.vibejson.llm.service.GPTMTSService;
+import ru.javaboys.vibejson.llm.mws.client.GPTMTSClient;
+import ru.javaboys.vibejson.llm.mws.dto.ChatCompletionRequestDTO;
+import ru.javaboys.vibejson.llm.mws.dto.ChatCompletionResponseDTO;
+import ru.javaboys.vibejson.llm.mws.dto.GPTModelListDTO;
+import ru.javaboys.vibejson.llm.mws.dto.MessageDTO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ import java.util.List;
 public class GPTMTSServiceTest {
 
     @Autowired
-    private GPTMTSService modelService;
+    private GPTMTSClient modelClient;
 
     @Test
     @DisplayName("Получение списка моделей")
     public void getListModels() {
-        GPTModelListDTO dto = modelService.getGPTModels();   // <‑‑ метод блокирующий
+        GPTModelListDTO dto = modelClient.listModels();   // <‑‑ метод блокирующий
         Assertions.assertNotNull(dto);
     }
 
@@ -40,7 +40,7 @@ public class GPTMTSServiceTest {
         list.add(MessageDTO.builder().role("use").content("У меня машина Ferrari").build());
         req.setMessages(list);
 
-        ChatCompletionResponseDTO response = modelService.sendNewMessage(req);
+        ChatCompletionResponseDTO response = modelClient.getAnswer(req);
         Assertions.assertNotNull(response);
     }
 
@@ -58,7 +58,7 @@ public class GPTMTSServiceTest {
         list.add(MessageDTO.builder().role("use").content("Напомни, какая у меня машина?").build());
         req.setMessages(list);
 
-        ChatCompletionResponseDTO response = modelService.sendNewMessage(req);
+        ChatCompletionResponseDTO response = modelClient.getAnswer(req);
         Assertions.assertNotNull(response);
     }
 
