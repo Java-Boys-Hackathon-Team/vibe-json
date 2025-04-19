@@ -2,12 +2,14 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class KafkaAuthDefDto {
 
     @NotBlank
+    @Size(max = 255)
     private String type; // SASL или TLS
 
     @Valid

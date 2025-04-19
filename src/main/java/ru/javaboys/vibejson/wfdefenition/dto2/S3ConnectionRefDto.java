@@ -1,17 +1,21 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
-import java.util.Map;
+import java.util.UUID;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class SapConnectionDefDto {
+public class S3ConnectionRefDto {
 
-    @NotBlank
+    private UUID id;
+
     @Size(max = 255)
     private String name;
 
-    private Map<String, String> props;
+    private Integer version;
+
+    @Size(max = 255)
+    private String tenantId;
+
 }

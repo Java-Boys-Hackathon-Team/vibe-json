@@ -1,13 +1,17 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
+import java.util.Map;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
 public class WorkflowCallDto {
+
+    // todo args
+
+    // todo workflowRef
 
     @NotNull
     @Valid
@@ -19,4 +23,7 @@ public class WorkflowCallDto {
 
     // Преобразование/фильтрация результата шага
     private Map<String, Object> outputFilter;
+
+    // todo failActivityResul
+
 }

@@ -1,27 +1,34 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
+import java.util.Map;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class SendToRabbitmqConfigDto {
 
-    @NotNull
+    @Valid
+    private RabbitmqConnectionRefDto connectionRef;
+
     @Valid
     private RabbitmqConnectionDefDto connectionDef;
 
     @NotBlank
+    @Size(max = 255)
     private String exchange;
 
     @NotBlank
+    @Size(max = 255)
     private String routingKey;
 
     @NotBlank
+    @Size(max = 255)
     private String message;
 
     @Valid
-    private RabbitmqMessagePropertiesDto messageProperties;
+    private Map<String, Object> messageProperties;
 }
 

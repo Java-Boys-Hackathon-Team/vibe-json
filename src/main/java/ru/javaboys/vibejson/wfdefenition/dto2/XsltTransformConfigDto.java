@@ -1,26 +1,19 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class XsltTransformConfigDto {
 
-    /**
-     * XSLT-шаблон (или ссылка на переменную вида jp{...})
-     */
-    @NotBlank
-    private String xslt;
+    private XsltTemplateRefDto  xsltTemplateRef;
 
-    /**
-     * Исходный XML-документ
-     */
-    @NotBlank
-    private String xml;
+    private XsltTransformTargetRefDto xsltTransformTargetRef;
 
-    /**
-     * Имя переменной, в которую записать результат трансформации
-     */
-    @NotBlank
-    private String resultVar;
+    @Size(max = 255)
+    private String xsltTemplate;
+
+    @Size(max = 255)
+    private String xsltTransformTarget;
+
 }

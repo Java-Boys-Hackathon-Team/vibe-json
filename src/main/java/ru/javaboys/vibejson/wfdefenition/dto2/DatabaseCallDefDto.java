@@ -1,25 +1,30 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
-import jakarta.validation.Valid;
+import java.util.Map;
+
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.Map;
 
 @Data
 public class DatabaseCallDefDto {
 
-    @Size(max = 100)
+    @Size(max = 255)
     private String type;
-
-    @NotNull
-    @Valid
-    private DatabaseConnectionDefDto connectionDef;
 
     @NotBlank
     private String sql;
 
-    private Map<String, String> parameters;
+    @Size(max = 255)
+    private String schema;
+
+    @Size(max = 255)
+    private String catalog;
+
+    @Size(max = 255)
+    private String functionName;
+
+    private Map<String, String> inParameters;
+
+    private Map<String, String> outParameters;
 }
