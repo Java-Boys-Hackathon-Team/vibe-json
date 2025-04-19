@@ -1,0 +1,13 @@
+/* применяем только к тем <vaadin-text-area>, у которых class="json-placeholder" */
+vaadin-text-area.json-placeholder::part(text-area) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* и стилизуем сам placeholder */
+vaadin-text-area.json-placeholder::part(text-area) ::placeholder {
+  text-align: center;
+  font-size: 1.2em;
+  color: var(--lumo-secondary-text-color);
+}

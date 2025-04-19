@@ -3,7 +3,7 @@
 
     <menu id="application" title="msg://ru.javaboys.vibejson/menu.application.title" opened="true">
         <item view="User.list" title="msg://ru.javaboys.vibejson.view.user/UserListView.title"/>
-        <item view="VibeJsonChat" title="msg://ru.javaboys.vibejson.view.vibejsonchat/vibeJsonChat.title"/>
+        <item view="VibeJsonChatView" title="msg://ru.javaboys.vibejson.view.vibejsonchat/vibeJsonChatView.title"/>
     </menu>
 
 </menu-config>

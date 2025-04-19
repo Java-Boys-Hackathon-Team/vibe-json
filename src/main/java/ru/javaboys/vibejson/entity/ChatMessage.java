@@ -2,6 +2,7 @@ package ru.javaboys.vibejson.entity;
 
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.JmixEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,7 +36,7 @@ public class ChatMessage {
     private Conversation conversation;
 
     @JoinColumn(name = "JSON_DSL_SCHEMA_ID")
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private JsonDslSchema jsonDslSchema;
 
     @CreatedBy

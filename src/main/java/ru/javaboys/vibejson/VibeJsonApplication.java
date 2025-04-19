@@ -1,6 +1,7 @@
 package ru.javaboys.vibejson;
 
 import com.google.common.base.Strings;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
@@ -22,6 +23,7 @@ import javax.sql.DataSource;
 @Push
 @Theme(value = "vibe-json")
 @PWA(name = "Vibe Json", shortName = "Vibe Json")
+@JsModule("./src/theme/color-scheme-switching-support.js")
 @SpringBootApplication
 public class VibeJsonApplication implements AppShellConfigurator {
 
