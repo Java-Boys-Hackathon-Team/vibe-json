@@ -3,12 +3,15 @@ package ru.javaboys.vibejson.view.vibejsonchat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
+import io.jmix.core.security.CurrentAuthentication;
+import io.jmix.core.security.SystemAuthenticator;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.combobox.JmixComboBox;
 import io.jmix.flowui.component.grid.DataGrid;
@@ -23,6 +26,7 @@ import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.JsonDslSchema;
@@ -30,21 +34,20 @@ import ru.javaboys.vibejson.entity.LLMModel;
 import ru.javaboys.vibejson.entity.SenderType;
 import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 import ru.javaboys.vibejson.llm.service.LLMService;
-import ru.javaboys.vibejson.llm.service.LLMServiceMTS;
 import ru.javaboys.vibejson.view.main.MainView;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Route(value = "vibe-json-chat", layout = MainView.class)
 @ViewController(id = "VibeJsonChatView")
 @ViewDescriptor(path = "vibe-json-chat.xml")
-@CssImport(value = "./styles/json-placeholder.css", themeFor = "jmix-text-area")
+@CssImport("./styles/waiting-spinner.css")
 public class VibeJsonChatView extends StandardView {
 
     private static final String FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL = """
@@ -104,7 +107,15 @@ public class VibeJsonChatView extends StandardView {
     @Autowired
     private Notifications notifications;
 
+    @Autowired
+    private SystemAuthenticator systemAuthenticator;
+
+    @Autowired
+    private CurrentAuthentication currentAuthentication;
+
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private final ExecutorService asyncPool = Executors.newFixedThreadPool(4);
 
     @Subscribe
     public void onInit(final InitEvent event) {
@@ -129,134 +140,67 @@ public class VibeJsonChatView extends StandardView {
 
     @Subscribe(id = "createConversation", subject = "clickListener")
     public void onCreateConversationClick(final ClickEvent<JmixButton> event) {
+        // создаём и сохраняем новую беседу
         Conversation conversation = metadata.create(Conversation.class);
         conversation.setTitle("New Chat");
         dataManager.save(conversation);
 
+        // добавляем в начало списка и выбираем
         conversationDc.getMutableItems().add(0, conversation);
         currentConversation = conversation;
 
-        chatMessagesDl.removeParameter("conversation");
-        chatMessagesDl.getContainer().getMutableItems().clear();
-
-        chatTextArea.clear();
-        jsonTextArea.clear();
+        // очищаем историю и JSON‑панель
+        resetChatArea();
 
         conversationsDataGrid.select(conversation);
     }
 
     @Subscribe("conversationsDataGrid")
     public void onConversationsDataGridItemClick(final ItemClickEvent<Conversation> event) {
+        // текущая выбранная беседа
         currentConversation = event.getItem();
 
-        // Если ничего не выбрано — очищаем области
+        //  Когда conversation не выбран: очищаем чат и JSON‑панель и выходим
         if (currentConversation == null) {
-            chatTextArea.clear();
-            jsonTextArea.clear();
+            clearChatPane();
+
             return;
         }
 
-        // 1) Загружаем все сообщения для этого разговора
-        chatMessagesDl.setParameter("conversation", currentConversation);
-        chatMessagesDl.load();
+        // Загружаем все сообщения текущего разговора
+        loadChatHistory(currentConversation);
 
-        // 2) Формируем историю переписки
-        String history = chatMessagesDc.getItems().stream()
-                .map(this::formatChatMessage)
-                .collect(Collectors.joining("\n\n"));
-
-        chatTextArea.setValue(history);
-        chatTextArea.scrollToEnd();
-
-        // 3) Подгружаем самый свежий JSON‑схему через JPQL‑запрос
-        Optional<String> latestJson = dataManager.loadValue(
-                        FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL, String.class)
-                .parameter("conversationId", currentConversation.getId())
-                .optional();
-
-        if (latestJson.isPresent()) {
-            jsonTextArea.setValue(formatJson(latestJson.get()));
-            jsonTextArea.scrollIntoView();
-        } else {
-            jsonTextArea.clear();
-        }
+        // Подгружаем «самую свежую» JSON‑схему, если она есть
+        loadLatestWorkflow(currentConversation);
     }
 
     @Subscribe(id = "sendButton", subject = "clickListener")
     public void onSendButtonClick(final ClickEvent<JmixButton> event) {
-        LLMModel selected = llmComboBox.getValue();
-        if (selected == null) {
-            notifications.create("Выберите модель")
-                    .withType(Notifications.Type.WARNING)
-                    .withPosition(Notification.Position.BOTTOM_END)
-                    .withDuration(3000)
-                    .show();
-
+        // Берём выбранную модель из ComboBox
+        LLMModel model = llmComboBox.getValue();
+        if (model == null) {
+            warn("Выберите модель");
             return;
         }
 
+        // Считываем текст промпта пользователя
         String prompt = promptInput.getValue();
         if (prompt == null || prompt.isBlank()) {
             return;
         }
 
-        if (currentConversation == null) {
-            Conversation conv = metadata.create(Conversation.class);
-            conv.setTitle("New Chat");
-            dataManager.save(conv);
+        // Получаем (или создаём) беседу
+        Conversation conversation = ensureConversation();
 
-            conversationDc.getMutableItems().add(0, conv);
-            conversationsDataGrid.asSingleSelect().setValue(conv);
-
-            currentConversation = conv;
-        }
-
-        // блокируем кнопку
-        sendButton.setEnabled(false);
-
-        // Сохраняем сообщение от пользователя
-        ChatMessage userMsg = metadata.create(ChatMessage.class);
-        userMsg.setConversation(currentConversation);
-        userMsg.setSenderType(SenderType.USER);
-        userMsg.setContent(prompt);
-        dataManager.save(userMsg);
-        chatMessagesDc.getMutableItems().add(userMsg);
-
+        // Сохраняем сообщение пользователя и показываем в чате
+        ChatMessage userMsg = saveUserMessage(conversation, promptInput.getValue());
         appendToChat(userMsg);
 
-        // получаю сервис-модель
-        LLMService llmService = llmServiceMap.get(selected.getBeanName());
-        // получаю ответ из модели
-        LLMResponseDto llmResponseDto = llmService.userPromptToWorkflow(currentConversation, prompt);
+        // блокируем ввод пока ждём LLM
+        sendButton.setEnabled(false);
+        promptInput.setEnabled(false);
 
-        // Сохраняем сообщение от бота
-        ChatMessage botMsg = metadata.create(ChatMessage.class);
-        botMsg.setConversation(currentConversation);
-        botMsg.setSenderType(SenderType.BOT);
-        botMsg.setContent(llmResponseDto.getLLMChatMsg());
-
-        // возможно будет схема тогда сохраняем и отображаем ее
-        if (llmResponseDto.getWorkflow() != null) {
-            JsonDslSchema schema = metadata.create(JsonDslSchema.class);
-            schema.setSchemaText(llmResponseDto.getWorkflow());
-            dataManager.save(schema);
-            botMsg.setJsonDslSchema(schema);
-            jsonTextArea.setValue(llmResponseDto.getWorkflow());
-        }
-
-        dataManager.save(botMsg);
-        chatMessagesDc.getMutableItems().add(botMsg);
-
-        appendToChat(botMsg);
-
-        // 3) Автоскролл вниз
-        chatTextArea.scrollToEnd();
-
-        // 4) Очистка поля ввода
-        promptInput.clear();
-
-        // разблокируем кнопку
-        sendButton.setEnabled(true);
+        callLlmAsync(model, conversation, prompt);
     }
 
     @Subscribe(id = "copyJsonButton", subject = "clickListener")
@@ -304,5 +248,140 @@ public class VibeJsonChatView extends StandardView {
         }
 
         chatTextArea.scrollToEnd();
+    }
+
+    private void resetChatArea() {
+        chatMessagesDl.removeParameter("conversation");
+        chatMessagesDl.getContainer().getMutableItems().clear();
+
+        chatTextArea.clear();
+        jsonTextArea.clear();
+    }
+
+    private void loadChatHistory(Conversation conversation) {
+        chatMessagesDl.setParameter("conversation", conversation);
+        chatMessagesDl.load();
+
+        String history = chatMessagesDc.getItems().stream()
+                .map(this::formatChatMessage)
+                .collect(Collectors.joining("\n\n"));
+
+        chatTextArea.setValue(history);
+        chatTextArea.scrollToEnd();
+    }
+
+    private void loadLatestWorkflow(Conversation conversation) {
+        Optional<String> jsonOpt = dataManager.loadValue(
+                        FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL, String.class)
+                .parameter("conversationId", conversation.getId())
+                .optional();
+
+        if (jsonOpt.isPresent()) {
+            jsonTextArea.setValue(formatJson(jsonOpt.get()));
+            jsonTextArea.scrollIntoView();
+        } else {
+            jsonTextArea.clear();
+        }
+    }
+
+    private void clearChatPane() {
+        chatTextArea.clear();
+        jsonTextArea.clear();
+    }
+
+    private Conversation ensureConversation() {
+        if (currentConversation != null) return currentConversation;
+
+        Conversation conversation = metadata.create(Conversation.class);
+        conversation.setTitle("New Chat");
+        dataManager.save(conversation);
+
+        conversationDc.getMutableItems().add(0, conversation);
+        conversationsDataGrid.select(conversation);
+        currentConversation = conversation;
+
+        return conversation;
+    }
+
+    private void warn(String text) {
+        notifications.create(text)
+                .withType(Notifications.Type.WARNING)
+                .withDuration(3_000)
+                .show();
+    }
+
+    private ChatMessage saveUserMessage(Conversation conversation, String prompt) {
+        ChatMessage message = metadata.create(ChatMessage.class);
+
+        message.setConversation(conversation);
+        message.setSenderType(SenderType.USER);
+        message.setContent(prompt);
+        dataManager.save(message);
+        chatMessagesDc.getMutableItems().add(message);
+
+        return message;
+    }
+
+    private void processLlmResult(LLMResponseDto dto, Throwable exception) {
+        sendButton.setEnabled(true);
+        promptInput.setEnabled(true);
+
+        if (exception != null) {
+            notifications.create("Ошибка LLM: " + exception.getMessage())
+                    .withType(Notifications.Type.ERROR)
+                    .show();
+            return;
+        }
+
+        // сохраняем сообщение бота
+        ChatMessage botMsg = metadata.create(ChatMessage.class);
+        botMsg.setConversation(currentConversation);
+        botMsg.setSenderType(SenderType.BOT);
+        botMsg.setContent(dto.getLLMChatMsg());
+
+        // если пришёл workflow‑JSON, сохраняем его и показываем
+        String workflowJson = dto.getWorkflow();
+        if (workflowJson != null && !workflowJson.isBlank()) {
+            JsonDslSchema schema = metadata.create(JsonDslSchema.class);
+            schema.setSchemaText(workflowJson);
+            botMsg.setJsonDslSchema(schema);
+
+            jsonTextArea.setValue(workflowJson);
+            jsonTextArea.scrollIntoView();
+        }
+
+        // окончательное сохранение сообщения и обновление UI
+        dataManager.save(botMsg);
+        chatMessagesDc.getMutableItems().add(botMsg);
+        appendToChat(botMsg);
+        chatTextArea.scrollToEnd();
+
+        // очищаем поле ввода
+        promptInput.clear();
+    }
+
+    private void callLlmAsync(LLMModel model,
+                              Conversation conversation,
+                              String prompt) {
+
+        Authentication auth = currentAuthentication.getAuthentication();
+
+        LLMService llmService = llmServiceMap.get(model.getBeanName());
+
+        UI ui = UI.getCurrent();
+
+        String username = auth.getName();
+
+        CompletableFuture
+                .supplyAsync(
+                        () -> systemAuthenticator.withUser(
+                                username,
+                                () -> llmService.userPromptToWorkflow(conversation, prompt)
+                        ),
+                        asyncPool
+                )
+                .whenComplete((dto, ex) ->
+                        ui.access(() -> processLlmResult(dto, ex))
+                );
     }
 }

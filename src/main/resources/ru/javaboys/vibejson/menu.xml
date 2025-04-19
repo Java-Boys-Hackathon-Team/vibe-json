@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
-    <menu id="application" title="msg://ru.javaboys.vibejson/menu.application.title" opened="true">
+    <menu id="application" title="msg://ru.javaboys.vibejson/menu.application.title" opened="false">
         <item view="User.list" title="msg://ru.javaboys.vibejson.view.user/UserListView.title"/>
         <item view="VibeJsonChatView" title="msg://ru.javaboys.vibejson.view.vibejsonchat/vibeJsonChatView.title"/>
         <item view="WorkflowConfiguration.list" title="msg://ru.javaboys.vibejson.view.workflowconfiguration/workflowConfigurationListView.title"/>
