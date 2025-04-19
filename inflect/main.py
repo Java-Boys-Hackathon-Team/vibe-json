@@ -25,20 +25,22 @@ def inflect_phrase(req: PhraseRequest):
         return {"error": "Неподдерживаемый падеж"}
 
     words = req.phrase.split()
-    inflected_words = []
+    if not words:
+        return {"result": ""}
 
-    for word in words:
-        parsed = morph.parse(word)
-        if not parsed:
-            inflected_words.append(word)
-            continue
+    max_to_inflect = 2  # сколько слов будем склонять
+    inflected = []
 
-        best = parsed[0]
-        inflected = best.inflect({case_tag})
-        if inflected:
-            inflected_words.append(inflected.word)
-        else:
-            inflected_words.append(word)
+    for i, word in enumerate(words):
+        if i < max_to_inflect:
+            parsed = morph.parse(word)
+            if parsed:
+                form = parsed[0].inflect({case_tag})
+                if form:
+                    inflected.append(form.word)
+                    continue
+        inflected.append(word)
 
-    return {"result": " ".join(inflected_words)}
+    return {"result": " ".join(inflected)}
+
 
