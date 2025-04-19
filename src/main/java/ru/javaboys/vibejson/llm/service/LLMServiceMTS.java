@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service("lLMServiceMTS")
 @RequiredArgsConstructor
 public class LLMServiceMTS implements LLMService {
 
