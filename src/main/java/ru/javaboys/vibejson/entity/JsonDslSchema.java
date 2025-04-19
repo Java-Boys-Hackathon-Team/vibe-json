@@ -3,6 +3,7 @@ package ru.javaboys.vibejson.entity;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -10,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import ru.javaboys.vibejson.converter.JsonbConverter;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -31,6 +33,7 @@ public class JsonDslSchema {
     @Column(name = "CREATED_DATE")
     private OffsetDateTime createdDate;
 
+    @Convert(converter = JsonbConverter.class)
     @Column(name="SCHEMA_TEXT", columnDefinition="jsonb")
     private String schemaText;
 
