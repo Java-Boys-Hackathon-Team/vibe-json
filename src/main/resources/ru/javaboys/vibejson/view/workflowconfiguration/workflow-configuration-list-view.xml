@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://workflowConfigurationListView.title"
+      focusComponent="workflowConfigurationsDataGrid">
+    <data>
+        <collection id="workflowConfigurationsDc"
+                    class="ru.javaboys.vibejson.entity.WorkflowConfiguration">
+            <fetchPlan extends="_base"/>
+            <loader id="workflowConfigurationsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from WorkflowConfiguration e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="workflowConfigurationsDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <button id="createButton" action="workflowConfigurationsDataGrid.createAction"/>
+            <button id="editButton" action="workflowConfigurationsDataGrid.editAction"/>
+            <button id="removeButton" action="workflowConfigurationsDataGrid.removeAction"/>
+            <simplePagination id="pagination" dataLoader="workflowConfigurationsDl"/>
+        </hbox>
+        <dataGrid id="workflowConfigurationsDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="workflowConfigurationsDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="createAction" type="list_create"/>
+                <action id="editAction" type="list_edit"/>
+                <action id="removeAction" type="list_remove"/>
+            </actions>
+            <columns resizable="true">
+                <column property="jsonPath"/>
+                <column property="json"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>
