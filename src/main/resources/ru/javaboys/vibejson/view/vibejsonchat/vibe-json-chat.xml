@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://vibeJsonChat.title">
+    <data>
+        <collection id="chatMessagesDc" class="ru.javaboys.vibejson.entity.ChatMessage">
+            <fetchPlan extends="_base"/>
+            <loader id="chatMessagesDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from ChatMessage e
+                    where e.conversation = :conversation  ]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="conversationDc" class="ru.javaboys.vibejson.entity.Conversation">
+            <loader id="conversationDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Conversation e order by e.createdDate desc]]>
+                </query>
+            </loader>
+            <fetchPlan extends="_base"/>
+        </collection>
+    </data>
+    <layout>
+        <split id="mainHBox" width="100%" height="100%">
+            <split id="chatVBox" width="75%" height="100%">
+
+                <vbox width="30%" height="100%" spacing="true">
+                    <!-- 1) Хэдер с кнопкой -->
+                    <hbox width="100%" spacing="true">
+                        <label value="Schema" />
+                        <button id="copyJsonButton"
+                                icon="COPY"
+                                text="Копировать JSON"
+                                alignSelf="END"/>
+                    </hbox>
+                    <scroller id="jsonScroller"
+                              width="100%"
+                              height="100%"
+                              scrollBarsDirection="BOTH">
+                        <textArea id="jsonTextArea"
+                                  width="100%"
+                                  height="100%"
+                                  readOnly="true"/>
+                    </scroller>
+                </vbox>
+
+                <vbox width="70%" height="100%" spacing="true">
+                    <scroller id="chatScroller"
+                              width="100%"
+                              height="100%"
+                              scrollBarsDirection="VERTICAL">
+                        <textArea id="chatTextArea"
+                                  width="100%" height="100%"
+                                  readOnly="true"/>
+                    </scroller>
+
+                    <hbox id="promptInputHBox"
+                          width="100%">
+                        <textArea id="promptInput"
+                                  width="100%"
+                                  placeholder="Введите текст…">
+                        </textArea>
+                        <button id="sendButton"
+                                text="Send"/>
+                    </hbox>
+                </vbox>
+            </split>
+
+            <vbox id="leftConversationPanel" width="25%" height="100%">
+                <button id="createConversation" text="Новый чат"/>
+                <dataGrid id="conversationsDataGrid" dataContainer="conversationDc" minWidth="100px" width="100%"
+                          height="100%">
+                    <actions showInContextMenuEnabled="false">
+                        <action id="read" type="list_read"/>
+                        <action id="edit" type="list_edit"/>
+                        <action id="remove" type="list_remove"/>
+                    </actions>
+                    <columns>
+                        <column property="title"/>
+                        <column property="createdDate"/>
+                    </columns>
+                    <contextMenu id="conversationContextMenu">
+                        <item id="renameItem" text="Переименовать" action="conversationsDataGrid.edit"/>
+                        <separator/>
+                        <item id="removeItem" text="Удалить" action="conversationsDataGrid.remove"/>
+                    </contextMenu>
+                </dataGrid>
+            </vbox>
+        </split>
+    </layout>
+</view>
