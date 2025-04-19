@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="5-create-employee-user" author="vibe-json">
+        <insert tableName="USER_" dbms="postgresql, mssql, hsqldb">
+            <column name="ID"            value="b4cc3ebe-f8fb-4331-9355-20400541171d"/>
+            <column name="VERSION"       valueNumeric="1"/>
+            <column name="USERNAME"      value="employee"/>
+            <column name="PASSWORD"      value="{noop}12345"/>
+            <column name="ACTIVE"        valueBoolean="true"/>
+        </insert>
+        <insert tableName="USER_" dbms="oracle, mysql, mariadb">
+            <column name="ID"            value="b4cc3ebef8fb4331935520400541171d"/>
+            <column name="VERSION"       valueNumeric="1"/>
+            <column name="USERNAME"      value="employee"/>
+            <column name="PASSWORD"      value="{noop}12345"/>
+            <column name="ACTIVE"        valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6-assign-employee-role" author="vibe-json">
+        <insert tableName="SEC_ROLE_ASSIGNMENT" dbms="postgresql, mssql, hsqldb">
+            <column name="ID"         value="232efe62-c71f-4696-b1a9-979a495c397a"/>
+            <column name="VERSION"    valueNumeric="1"/>
+            <column name="USERNAME"   value="employee"/>
+            <column name="ROLE_CODE"  value="employee"/>
+            <column name="ROLE_TYPE"  value="resource"/>
+        </insert>
+        <insert tableName="SEC_ROLE_ASSIGNMENT" dbms="oracle, mysql, mariadb">
+            <column name="ID"         value="232efe62c71f4696b1a9979a495c397a"/>
+            <column name="VERSION"    valueNumeric="1"/>
+            <column name="USERNAME"   value="employee"/>
+            <column name="ROLE_CODE"  value="employee"/>
+            <column name="ROLE_TYPE"  value="resource"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

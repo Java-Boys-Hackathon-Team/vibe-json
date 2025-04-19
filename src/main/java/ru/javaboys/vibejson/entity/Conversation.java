@@ -3,8 +3,10 @@ package ru.javaboys.vibejson.entity;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -36,7 +38,7 @@ public class Conversation {
     @Column(name = "TITLE")
     private String title;
 
-    @OneToMany(mappedBy = "conversation")
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ChatMessage> messages;
 
     public List<ChatMessage> getMessages() {

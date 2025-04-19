@@ -33,7 +33,6 @@
             <column name="ID" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JSON_DSL_SCHEMA"/>
             </column>
-            <column name="SCHEMA_TEXT" type="CLOB"/>
             <column name="CREATED_BY" type="VARCHAR(255)"/>
             <column name="CREATED_DATE" type="${offsetDateTime.type}"/>
         </createTable>
