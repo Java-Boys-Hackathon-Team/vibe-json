@@ -1,21 +1,14 @@
 package ru.javaboys.vibejson.view.vibejsonchat;
 
 
-import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyDownEvent;
-import com.vaadin.flow.component.KeyPressEvent;
-import com.vaadin.flow.component.KeyUpEvent;
 import com.vaadin.flow.component.grid.ItemClickEvent;
-import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
 import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.component.listbox.JmixListBox;
 import io.jmix.flowui.component.textarea.JmixTextArea;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.CollectionContainer;
@@ -28,12 +21,9 @@ import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
-import ru.javaboys.vibejson.entity.JsonDslSchema;
 import ru.javaboys.vibejson.entity.SenderType;
 import ru.javaboys.vibejson.view.main.MainView;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -97,9 +87,6 @@ public class VibeJsonChat extends StandardView {
     private CollectionContainer<ChatMessage> chatMessagesDc;
 
     @ViewComponent
-    private HorizontalLayout promptInputHBox;
-
-    @ViewComponent
     private JmixButton sendButton;
 
 
@@ -114,7 +101,7 @@ public class VibeJsonChat extends StandardView {
         conversation.setTitle("New Chat");
         dataManager.save(conversation);
 
-        conversationDc.getMutableItems().addFirst(conversation);
+        conversationDc.getMutableItems().add(0, conversation);
 
         conversationsDataGrid.select(conversation);
     }
