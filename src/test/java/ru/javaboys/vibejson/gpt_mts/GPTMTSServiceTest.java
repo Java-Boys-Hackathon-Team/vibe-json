@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.javaboys.vibejson.llm.dto.ChatCompletionRequestDTO;
 import ru.javaboys.vibejson.llm.dto.ChatCompletionResponseDTO;
-import ru.javaboys.vibejson.llm.dto.GPTModelsDTO;
+import ru.javaboys.vibejson.llm.dto.GPTModelListDTO;
 import ru.javaboys.vibejson.llm.dto.MessageDTO;
 import ru.javaboys.vibejson.llm.service.GPTMTSService;
 
@@ -24,7 +24,7 @@ public class GPTMTSServiceTest {
     @Test
     @DisplayName("Получение списка моделей")
     public void getListModels() {
-        GPTModelsDTO dto = modelService.getGPTModels();   // <‑‑ метод блокирующий
+        GPTModelListDTO dto = modelService.getGPTModels();   // <‑‑ метод блокирующий
         Assertions.assertNotNull(dto);
     }
 

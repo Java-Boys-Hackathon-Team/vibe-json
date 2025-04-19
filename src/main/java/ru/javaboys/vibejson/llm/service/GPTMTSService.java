@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.llm.client.GPTMTSClient;
 import ru.javaboys.vibejson.llm.dto.ChatCompletionRequestDTO;
 import ru.javaboys.vibejson.llm.dto.ChatCompletionResponseDTO;
-import ru.javaboys.vibejson.llm.dto.GPTModelsDTO;
+import ru.javaboys.vibejson.llm.dto.GPTModelListDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ public class GPTMTSService {
 
     private final GPTMTSClient gptClient;
 
-    public GPTModelsDTO getGPTModels() {
+    public GPTModelListDTO getGPTModels() {
         return gptClient.listModels();
     }
 

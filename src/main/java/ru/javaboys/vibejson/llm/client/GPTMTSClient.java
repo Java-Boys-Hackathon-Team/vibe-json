@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.javaboys.vibejson.llm.dto.ChatCompletionRequestDTO;
 import ru.javaboys.vibejson.llm.dto.ChatCompletionResponseDTO;
-import ru.javaboys.vibejson.llm.dto.GPTModelsDTO;
+import ru.javaboys.vibejson.llm.dto.GPTModelListDTO;
 
 @Component
 @RequiredArgsConstructor
@@ -14,7 +14,7 @@ public class GPTMTSClient {
 
     private final WebClient mwsWebClient;
 
-    public GPTModelsDTO listModels() {
+    public GPTModelListDTO listModels() {
         return mwsWebClient
                 .get()
                 .uri("/v1/models")
@@ -23,7 +23,7 @@ public class GPTMTSClient {
                         resp -> resp.bodyToMono(String.class)
                                 .map(body -> new IllegalStateException(
                                         "Ошибка MWS: " + resp.statusCode() + " – " + body)))
-                .bodyToMono(GPTModelsDTO.class)
+                .bodyToMono(GPTModelListDTO.class)
                 .block();
     }
 

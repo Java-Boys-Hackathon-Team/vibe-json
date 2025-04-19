@@ -7,6 +7,6 @@ import java.util.ArrayList;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GPTModelsDTO {
+public class GPTModelListDTO {
     private ArrayList<GPTModelDTO> data;
 }
