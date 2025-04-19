@@ -1,0 +1,11 @@
+.json-placeholder::part(text-area) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.json-placeholder::part(text-area) ::placeholder {
+  text-align: center;
+  font-size: var(--lumo-font-size-l);
+  color: var(--lumo-secondary-text-color);
+}

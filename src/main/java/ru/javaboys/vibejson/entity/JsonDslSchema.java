@@ -3,14 +3,15 @@ package ru.javaboys.vibejson.entity;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import ru.javaboys.vibejson.converter.JsonbConverter;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -24,10 +25,6 @@ public class JsonDslSchema {
     @Id
     private UUID id;
 
-    @Column(name = "SCHEMA_TEXT")
-    @Lob
-    private String schemaText;
-
     @CreatedBy
     @Column(name = "CREATED_BY")
     private String createdBy;
@@ -35,6 +32,11 @@ public class JsonDslSchema {
     @CreatedDate
     @Column(name = "CREATED_DATE")
     private OffsetDateTime createdDate;
+
+    @Convert(converter = JsonbConverter.class)
+    @Column(name="SCHEMA_TEXT", columnDefinition="jsonb")
+    private String schemaText;
+
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "jsonDslSchema")
     private ChatMessage chatMessage;
 
@@ -44,10 +46,6 @@ public class JsonDslSchema {
 
     public void setChatMessage(ChatMessage chatMessage) {
         this.chatMessage = chatMessage;
-    }
-
-    public String getSchemaText() {
-        return schemaText;
     }
 
     public OffsetDateTime getCreatedDate() {
@@ -72,5 +70,13 @@ public class JsonDslSchema {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getSchemaText() {
+        return schemaText;
+    }
+
+    public void setSchemaText(String schemaText) {
+        this.schemaText = schemaText;
     }
 }

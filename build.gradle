@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'net.datafaker:datafaker:2.4.3'
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.data:jmix-eclipselink-starter'
     implementation 'io.jmix.security:jmix-security-starter'
@@ -39,7 +40,6 @@ dependencies {
     implementation 'org.projectlombok:lombok'
 
     annotationProcessor("org.projectlombok:lombok:1.18.32")
-
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

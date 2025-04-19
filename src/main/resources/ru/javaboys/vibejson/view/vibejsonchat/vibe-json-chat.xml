@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
-      title="msg://vibeJsonChat.title">
+      title="msg://ru.javaboys.vibejson.view.vibejsonchat/vibeJsonChatView.title">
     <data>
         <collection id="chatMessagesDc" class="ru.javaboys.vibejson.entity.ChatMessage">
             <fetchPlan extends="_base"/>
@@ -20,52 +20,9 @@
             <fetchPlan extends="_base"/>
         </collection>
     </data>
+
     <layout>
         <split id="mainHBox" width="100%" height="100%">
-            <split id="chatVBox" width="75%" height="100%">
-
-                <vbox width="30%" height="100%" spacing="true">
-                    <!-- 1) Хэдер с кнопкой -->
-                    <hbox width="100%" spacing="true">
-                        <label value="Schema" />
-                        <button id="copyJsonButton"
-                                icon="COPY"
-                                text="Копировать JSON"
-                                alignSelf="END"/>
-                    </hbox>
-                    <scroller id="jsonScroller"
-                              width="100%"
-                              height="100%"
-                              scrollBarsDirection="BOTH">
-                        <textArea id="jsonTextArea"
-                                  width="100%"
-                                  height="100%"
-                                  readOnly="true"/>
-                    </scroller>
-                </vbox>
-
-                <vbox width="70%" height="100%" spacing="true">
-                    <scroller id="chatScroller"
-                              width="100%"
-                              height="100%"
-                              scrollBarsDirection="VERTICAL">
-                        <textArea id="chatTextArea"
-                                  width="100%" height="100%"
-                                  readOnly="true"/>
-                    </scroller>
-
-                    <hbox id="promptInputHBox"
-                          width="100%">
-                        <textArea id="promptInput"
-                                  width="100%"
-                                  placeholder="Введите текст…">
-                        </textArea>
-                        <button id="sendButton"
-                                text="Send"/>
-                    </hbox>
-                </vbox>
-            </split>
-
             <vbox id="leftConversationPanel" width="25%" height="100%">
                 <button id="createConversation" text="Новый чат"/>
                 <dataGrid id="conversationsDataGrid" dataContainer="conversationDc" minWidth="100px" width="100%"
@@ -86,6 +43,56 @@
                     </contextMenu>
                 </dataGrid>
             </vbox>
+
+            <split id="chatVBox" width="75%" height="100%">
+                <vbox width="60%" height="100%" spacing="true">
+
+                    <comboBox id="llmComboBox"
+                              width="200px"
+                              required="true"
+                              property="llm"/>
+
+                    <scroller id="chatScroller"
+                              width="100%" height="100%"
+                              flexGrow="1"
+                              scrollBarsDirection="VERTICAL">
+
+                        <!-- сам текст чата.  autogrow=false, чтобы не «распухал» -->
+                        <textArea id="chatTextArea"
+                                  width="100%" height="100%"
+                                  autogrow="false"
+                                  readOnly="true"
+                                  placeholder="msg://chatTextArea1.placeholder"/>
+                    </scroller>
+
+                    <hbox id="promptInputHBox"
+                          width="100%">
+                        <textArea id="promptInput"
+                                  width="100%"
+                                  placeholder="Введите текст…">
+                        </textArea>
+                        <button id="sendButton"
+                                text="Send"/>
+                    </hbox>
+                </vbox>
+
+                <vbox width="40%" height="100%" spacing="true">
+                    <codeEditor id="jsonTextArea"
+                                width="100%"
+                                height="100%"
+                                flexGrow="1"
+                                mode="JSON"
+                                label="msg://jsonCodeEditor.label" readOnly="true"/>
+
+                    <hbox width="100%" spacing="true">
+                        <label value="Schema"/>
+                        <button id="copyJsonButton"
+                                icon="COPY"
+                                text="Копировать JSON"
+                                alignSelf="END"/>
+                    </hbox>
+                </vbox>
+            </split>
         </split>
     </layout>
 </view>

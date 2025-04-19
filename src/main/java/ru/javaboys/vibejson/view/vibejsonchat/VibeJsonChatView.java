@@ -1,16 +1,20 @@
 package ru.javaboys.vibejson.view.vibejsonchat;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
+import io.jmix.flowui.Notifications;
+import io.jmix.flowui.component.combobox.JmixComboBox;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.textarea.JmixTextArea;
 import io.jmix.flowui.kit.component.button.JmixButton;
+import io.jmix.flowui.kit.component.codeeditor.JmixCodeEditor;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.StandardView;
@@ -21,25 +25,27 @@ import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
+import ru.javaboys.vibejson.entity.JsonDslSchema;
+import ru.javaboys.vibejson.entity.LLMModel;
 import ru.javaboys.vibejson.entity.SenderType;
+import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
+import ru.javaboys.vibejson.llm.service.LLMService;
+import ru.javaboys.vibejson.llm.service.LLMServiceMTS;
 import ru.javaboys.vibejson.view.main.MainView;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Route(value = "vibe-json-chat", layout = MainView.class)
-@ViewController(id = "VibeJsonChat")
+@ViewController(id = "VibeJsonChatView")
 @ViewDescriptor(path = "vibe-json-chat.xml")
-public class VibeJsonChat extends StandardView {
-    private static final List<String> BOT_RESPONSES = List.of(
-            "Sure, I'll take a look!",
-            "Let me think...",
-            "I'm not sure, sorry.",
-            "Here's what I found for you."
-    );
+@CssImport(value = "./styles/json-placeholder.css", themeFor = "jmix-text-area")
+public class VibeJsonChatView extends StandardView {
 
     private static final String FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL = """
             select m.jsonDslSchema.schemaText
@@ -56,8 +62,14 @@ public class VibeJsonChat extends StandardView {
 
     private Conversation currentConversation;
 
+    @Autowired
+    private Map<String, LLMService> llmServiceMap;
+
     @ViewComponent
-    private JmixTextArea jsonTextArea;
+    private JmixCodeEditor jsonTextArea;
+
+    @ViewComponent
+    private JmixComboBox<LLMModel> llmComboBox;
 
     @ViewComponent
     private DataGrid<Conversation> conversationsDataGrid;
@@ -89,10 +101,30 @@ public class VibeJsonChat extends StandardView {
     @ViewComponent
     private JmixButton sendButton;
 
+    @Autowired
+    private Notifications notifications;
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    @Subscribe
+    public void onInit(final InitEvent event) {
+        llmComboBox.setItems(LLMModel.values());
+        llmComboBox.setItemLabelGenerator(LLMModel::getCaption);
+    }
 
     @Subscribe
     public void onBeforeShow(final BeforeShowEvent event) {
         conversationDl.load();
+
+        // Для JSON‑области
+        jsonTextArea.getElement().executeJs(
+                "$0.querySelector('textarea').setAttribute('disabled', 'true')"
+        );
+
+        // Для окна чата
+        chatTextArea.getElement().executeJs(
+                "$0.querySelector('textarea').setAttribute('disabled', 'true')"
+        );
     }
 
     @Subscribe(id = "createConversation", subject = "clickListener")
@@ -103,6 +135,12 @@ public class VibeJsonChat extends StandardView {
 
         conversationDc.getMutableItems().add(0, conversation);
         currentConversation = conversation;
+
+        chatMessagesDl.removeParameter("conversation");
+        chatMessagesDl.getContainer().getMutableItems().clear();
+
+        chatTextArea.clear();
+        jsonTextArea.clear();
 
         conversationsDataGrid.select(conversation);
     }
@@ -137,8 +175,8 @@ public class VibeJsonChat extends StandardView {
                 .optional();
 
         if (latestJson.isPresent()) {
-            jsonTextArea.setValue(latestJson.get());
-            jsonTextArea.scrollToStart();
+            jsonTextArea.setValue(formatJson(latestJson.get()));
+            jsonTextArea.scrollIntoView();
         } else {
             jsonTextArea.clear();
         }
@@ -146,32 +184,66 @@ public class VibeJsonChat extends StandardView {
 
     @Subscribe(id = "sendButton", subject = "clickListener")
     public void onSendButtonClick(final ClickEvent<JmixButton> event) {
-        String message = promptInput.getValue();
-        if (currentConversation == null || message == null || message.isBlank()) {
+        LLMModel selected = llmComboBox.getValue();
+        if (selected == null) {
+            notifications.create("Выберите модель")
+                    .withType(Notifications.Type.WARNING)
+                    .withPosition(Notification.Position.BOTTOM_END)
+                    .withDuration(3000)
+                    .show();
+
             return;
+        }
+
+        String prompt = promptInput.getValue();
+        if (prompt == null || prompt.isBlank()) {
+            return;
+        }
+
+        if (currentConversation == null) {
+            Conversation conv = metadata.create(Conversation.class);
+            conv.setTitle("New Chat");
+            dataManager.save(conv);
+
+            conversationDc.getMutableItems().add(0, conv);
+            conversationsDataGrid.asSingleSelect().setValue(conv);
+
+            currentConversation = conv;
         }
 
         // блокируем кнопку
         sendButton.setEnabled(false);
 
-        // 1) Сохраняем сообщение от пользователя
+        // Сохраняем сообщение от пользователя
         ChatMessage userMsg = metadata.create(ChatMessage.class);
         userMsg.setConversation(currentConversation);
         userMsg.setSenderType(SenderType.USER);
-        userMsg.setContent(message);
+        userMsg.setContent(prompt);
         dataManager.save(userMsg);
         chatMessagesDc.getMutableItems().add(userMsg);
 
         appendToChat(userMsg);
 
-        // TODO: здесь будет взаимодействие с чатом GPT
+        // получаю сервис-модель
+        LLMService llmService = llmServiceMap.get(selected.getBeanName());
+        // получаю ответ из модели
+        LLMResponseDto llmResponseDto = llmService.userPromptToWorkflow(currentConversation, prompt);
+
+        // Сохраняем сообщение от бота
         ChatMessage botMsg = metadata.create(ChatMessage.class);
         botMsg.setConversation(currentConversation);
         botMsg.setSenderType(SenderType.BOT);
-        botMsg.setContent(
-                BOT_RESPONSES.get(ThreadLocalRandom.current()
-                        .nextInt(BOT_RESPONSES.size()))
-        );
+        botMsg.setContent(llmResponseDto.getLLMChatMsg());
+
+        // возможно будет схема тогда сохраняем и отображаем ее
+        if (llmResponseDto.getWorkflow() != null) {
+            JsonDslSchema schema = metadata.create(JsonDslSchema.class);
+            schema.setSchemaText(llmResponseDto.getWorkflow());
+            dataManager.save(schema);
+            botMsg.setJsonDslSchema(schema);
+            jsonTextArea.setValue(llmResponseDto.getWorkflow());
+        }
+
         dataManager.save(botMsg);
         chatMessagesDc.getMutableItems().add(botMsg);
 
@@ -187,7 +259,32 @@ public class VibeJsonChat extends StandardView {
         sendButton.setEnabled(true);
     }
 
+    @Subscribe(id = "copyJsonButton", subject = "clickListener")
+    public void onCopyJsonButtonClick(final ClickEvent<JmixButton> event) {
+        String json = jsonTextArea.getValue();
+        if (json == null || json.isBlank()) {
+            Notification.show("Нечего копировать");
+            return;
+        }
 
+        getUI().ifPresent(ui ->
+                ui.getPage().executeJs(
+                        "navigator.clipboard.writeText($0)"
+                        , json
+                )
+        );
+        Notification.show("JSON скопирован");
+    }
+
+    private String formatJson(String rawJson) {
+        try {
+            Object json = mapper.readValue(rawJson, Object.class);
+            return mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(json);
+        } catch (Exception e) {
+            return rawJson;
+        }
+    }
 
     private String formatChatMessage(ChatMessage msg) {
         String who = msg.getSenderType().name();
@@ -207,22 +304,5 @@ public class VibeJsonChat extends StandardView {
         }
 
         chatTextArea.scrollToEnd();
-    }
-
-    @Subscribe(id = "copyJsonButton", subject = "clickListener")
-    public void onCopyJsonButtonClick(final ClickEvent<JmixButton> event) {
-        String json = jsonTextArea.getValue();
-        if (json == null || json.isBlank()) {
-            Notification.show("Нечего копировать");
-            return;
-        }
-
-        getUI().ifPresent(ui ->
-                ui.getPage().executeJs(
-                        "navigator.clipboard.writeText($0)"
-                        , json
-                )
-        );
-        Notification.show("JSON скопирован");
     }
 }
