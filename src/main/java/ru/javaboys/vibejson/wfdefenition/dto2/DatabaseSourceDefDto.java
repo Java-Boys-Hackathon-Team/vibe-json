@@ -5,14 +5,22 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class KafkaSslDefDto {
+public class DatabaseSourceDefDto {
 
     @NotBlank
     @Size(max = 255)
-    private String trustStoreType;
+    private String url;
 
     @NotBlank
     @Size(max = 255)
-    private String trustStoreCertificates;
+    private String className;
+
+    @NotBlank
+    @Size(max = 255)
+    private String userName;
+
+    @NotBlank
+    @Size(max = 255)
+    private String userPass;
+
 }
-

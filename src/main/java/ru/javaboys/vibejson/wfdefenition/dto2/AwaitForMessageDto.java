@@ -1,12 +1,12 @@
-package ru.javaboys.vibejson.wfdefenition.dto;
+package ru.javaboys.vibejson.wfdefenition.dto2;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
-public class InjectDto {
+public class AwaitForMessageDto {
 
     @NotBlank
     @Size(max = 255)
@@ -15,7 +15,6 @@ public class InjectDto {
     @Size(max = 255)
     private String description;
 
-    @NotBlank
     @Size(max = 255)
     private String transition;
 
@@ -24,6 +23,6 @@ public class InjectDto {
     private String type;
 
     @NotNull
-    private Map<String, Object> injectData;
+    private WorkflowCallDto workflowCall;
 
 }

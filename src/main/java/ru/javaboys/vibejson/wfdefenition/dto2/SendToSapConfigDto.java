@@ -9,6 +9,10 @@ public class SendToSapConfigDto {
 
     @NotNull
     @Valid
+    private SapConnectionRefDto connectionRef;
+
+    @NotNull
+    @Valid
     private SapConnectionDefDto connectionDef;
 
     @NotNull

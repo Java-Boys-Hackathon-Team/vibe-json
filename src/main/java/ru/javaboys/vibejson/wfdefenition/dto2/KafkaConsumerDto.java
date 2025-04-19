@@ -1,16 +1,18 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
+import java.util.Map;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.Map;
 
 @Data
 public class KafkaConsumerDto {
 
     @NotBlank
+    @Size(max = 255)
     private String topic;
 
     @NotNull
