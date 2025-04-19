@@ -1,17 +1,23 @@
 package ru.javaboys.vibejson.view.main;
 
 import com.vaadin.flow.router.Route;
+import io.jmix.flowui.ViewNavigators;
 import io.jmix.flowui.app.main.StandardMainView;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.theme.ThemeUtils;
 import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.javaboys.vibejson.view.vibejsonchat.VibeJsonChatView;
 
 @Route("")
 @ViewController(id = "MainView")
 @ViewDescriptor(path = "main-view.xml")
 public class MainView extends StandardMainView {
+
+    @Autowired
+    private ViewNavigators viewNavigators;
 
     @Subscribe("themeSwitcher.systemThemeItem.systemThemeAction")
     public void onThemeSwitcherSystemThemeItemSystemThemeAction(final ActionPerformedEvent event) {
@@ -26,5 +32,11 @@ public class MainView extends StandardMainView {
     @Subscribe("themeSwitcher.darkThemeItem.darkThemeAction")
     public void onThemeSwitcherDarkThemeItemDarkThemeAction(final ActionPerformedEvent event) {
         ThemeUtils.applyDarkTheme();
+    }
+
+    @Subscribe
+    public void onBeforeShow(final BeforeShowEvent event) {
+        viewNavigators.view(VibeJsonChatView.class).navigate();
+
     }
 }

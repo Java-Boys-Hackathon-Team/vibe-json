@@ -44,12 +44,11 @@ public class LLMServiceDemo implements LLMService {
           LLMResponseDto dto = new LLMResponseDto();
           dto.setLLMChatMsg(chatMsg);
           dto.setWorkflow(workflow);
-          dto.setConversationCtx(null);  // не используем
+          dto.setConversationCtx(null);
           dto.setException(null);
 
           return dto;
      }
-
 
      private Resource getRandomWorkflowResource() {
           int randomIndex = ThreadLocalRandom.current().nextInt(1, 6);
