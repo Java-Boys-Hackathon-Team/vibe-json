@@ -11,3 +11,11 @@
 - запустить контейнер с БД в docker-compose.yml: сервис `db`
 - запустить проект через Run/Debug Configuration (сохранена в файле `.run/Vibe-json Jmix Application.run.xml`)
 - UI доступен по ссылке [http://localhost:8080](http://localhost:8080). Креды `admin:admin`
+
+##### Информация о проекте:
+- Добавлен пользователь employee с паролем 12345 и назначена роль employee. Для данной роли скрыты системные окна.
+- Как подключить свою реализацию LLM‑сервиса:
+    - Наследуйтесь от интерфейса LLMService
+    - Дайте бину имя, например @Service("lLMServiceMTS")
+    - Зарегистрируйте модель в enum LLMModel, например MTC("lLMServiceMTS", "MTC")
+    - После перезапуска приложения новая модель появится в ComboBox.
