@@ -1,5 +1,11 @@
 package ru.javaboys.vibejson.entity;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.CascadeType;
@@ -13,11 +19,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @JmixEntity
 @Table(name = "CHAT_MESSAGE", indexes = {
@@ -36,7 +37,7 @@ public class ChatMessage {
     private Conversation conversation;
 
     @JoinColumn(name = "JSON_DSL_SCHEMA_ID")
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private JsonDslSchema jsonDslSchema;
 
     @CreatedBy
