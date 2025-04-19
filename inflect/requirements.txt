@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+pymorphy2
+setuptools>=65.0.0
