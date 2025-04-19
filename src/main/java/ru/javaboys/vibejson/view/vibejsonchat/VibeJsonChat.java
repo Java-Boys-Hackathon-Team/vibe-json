@@ -102,6 +102,7 @@ public class VibeJsonChat extends StandardView {
         dataManager.save(conversation);
 
         conversationDc.getMutableItems().add(0, conversation);
+        currentConversation = conversation;
 
         conversationsDataGrid.select(conversation);
     }
