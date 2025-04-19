@@ -45,12 +45,25 @@
             </vbox>
 
             <split id="chatVBox" width="75%" height="100%">
-                <vbox width="70%" height="100%" spacing="true">
+                <vbox width="60%" height="100%" spacing="true">
 
-                    <textArea id="chatTextArea"
+                    <comboBox id="llmComboBox"
+                              width="200px"
+                              required="true"
+                              property="llm"/>
+
+                    <scroller id="chatScroller"
                               width="100%" height="100%"
                               flexGrow="1"
-                              placeholder="msg://chatTextArea1.placeholder"/>
+                              scrollBarsDirection="VERTICAL">
+
+                        <!-- сам текст чата.  autogrow=false, чтобы не «распухал» -->
+                        <textArea id="chatTextArea"
+                                  width="100%" height="100%"
+                                  autogrow="false"
+                                  readOnly="true"
+                                  placeholder="msg://chatTextArea1.placeholder"/>
+                    </scroller>
 
                     <hbox id="promptInputHBox"
                           width="100%">
@@ -63,7 +76,7 @@
                     </hbox>
                 </vbox>
 
-                <vbox width="30%" height="100%" spacing="true">
+                <vbox width="40%" height="100%" spacing="true">
                     <codeEditor id="jsonTextArea"
                                 width="100%"
                                 height="100%"
