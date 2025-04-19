@@ -1,12 +1,12 @@
-package ru.javaboys.vibejson.llm.client;
+package ru.javaboys.vibejson.llm.mws.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.javaboys.vibejson.llm.dto.ChatCompletionRequestDTO;
-import ru.javaboys.vibejson.llm.dto.ChatCompletionResponseDTO;
-import ru.javaboys.vibejson.llm.dto.GPTModelListDTO;
+import ru.javaboys.vibejson.llm.mws.dto.ChatCompletionRequestDTO;
+import ru.javaboys.vibejson.llm.mws.dto.ChatCompletionResponseDTO;
+import ru.javaboys.vibejson.llm.mws.dto.GPTModelListDTO;
 
 @Component
 @RequiredArgsConstructor

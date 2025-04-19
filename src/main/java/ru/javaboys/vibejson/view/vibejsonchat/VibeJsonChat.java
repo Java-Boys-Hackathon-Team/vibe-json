@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.SenderType;
+import ru.javaboys.vibejson.llm.service.LLMServiceMTS;
 import ru.javaboys.vibejson.view.main.MainView;
 
 import java.time.format.DateTimeFormatter;
@@ -55,6 +56,9 @@ public class VibeJsonChat extends StandardView {
             """;
 
     private Conversation currentConversation;
+
+    @Autowired
+    private LLMServiceMTS llmServiceMTS;
 
     @ViewComponent
     private JmixTextArea jsonTextArea;
@@ -172,6 +176,8 @@ public class VibeJsonChat extends StandardView {
                 BOT_RESPONSES.get(ThreadLocalRandom.current()
                         .nextInt(BOT_RESPONSES.size()))
         );
+        //MTS LLM
+        //botMsg.setContent(llmServiceMTS.userPromptToWorkflow(currentConversation, message).getLLMChatMsg());
         dataManager.save(botMsg);
         chatMessagesDc.getMutableItems().add(botMsg);
 
