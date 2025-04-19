@@ -35,6 +35,10 @@ dependencies {
     implementation 'io.jmix.datatools:jmix-datatools-flowui-starter'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.projectlombok:lombok'
+
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
 
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
