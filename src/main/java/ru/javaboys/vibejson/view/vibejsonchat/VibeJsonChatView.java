@@ -36,6 +36,7 @@ import ru.javaboys.vibejson.llm.service.LLMService;
 import ru.javaboys.vibejson.view.main.MainView;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -265,6 +266,7 @@ public class VibeJsonChatView extends StandardView {
         chatMessagesDl.load();
 
         String history = chatMessagesDc.getItems().stream()
+                .sorted(Comparator.comparing(ChatMessage::getCreatedDate))
                 .map(this::formatChatMessage)
                 .collect(Collectors.joining("\n\n"));
 
