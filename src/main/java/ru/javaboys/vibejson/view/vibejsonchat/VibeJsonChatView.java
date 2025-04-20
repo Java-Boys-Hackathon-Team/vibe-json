@@ -17,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.html.Image;
@@ -144,8 +147,18 @@ public class VibeJsonChatView extends StandardView {
         llmComboBox.setItems(llmServiceMap.values());
         llmComboBox.setItemLabelGenerator(LLMService::getModelCode);
 
+        llmComboBox.addValueChangeListener((HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<LLMService>, LLMService>>) e -> {
+            if (currentConversation != null && e.getValue() != null) {
+                currentConversation.setService(e.getValue().getModelCode());
+                dataManager.save(currentConversation);
+            }
+        });
+
         // default
-        llmComboBox.setValue(llmServiceMap.get("lLMServiceDemo"));
+        String serviceName = Optional.ofNullable(currentConversation)
+                .map(Conversation::getService)
+                .orElse("lLMServiceDemo");
+        llmComboBox.setValue(llmServiceMap.get(serviceName));
 
         imgSlider.setVisible(false);
 
@@ -203,6 +216,7 @@ public class VibeJsonChatView extends StandardView {
     public void onConversationsDataGridItemClick(final ItemClickEvent<Conversation> event) {
         // текущая выбранная беседа
         currentConversation = event.getItem();
+        llmComboBox.setValue(llmServiceMap.get("lLMService" + currentConversation.getService()));
 
         //  Когда conversation не выбран: очищаем чат и JSON‑панель и выходим
         if (currentConversation == null) {
