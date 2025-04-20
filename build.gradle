@@ -2,6 +2,7 @@ plugins {
     id 'io.jmix' version '2.5.1'
     id 'java'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.9'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -19,6 +20,16 @@ repositories {
     maven {
         url 'https://global.repo.jmix.io/repository/public'
     }
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven {
+        name = 'Central Portal Snapshots'
+        url = 'https://central.sonatype.com/repository/maven-snapshots/'
+    }
+}
+
+ext {
+    set('springAiVersion', "1.0.0-M7")
 }
 
 dependencies {
@@ -39,6 +50,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.projectlombok:lombok'
 
+    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
     annotationProcessor("org.projectlombok:lombok:1.18.32")
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -50,6 +64,12 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
 }
 
 configurations.implementation {
