@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  vide-json:
+  vibe-json:
     build: .
     command: ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-Dconfig.file=/workspace/application-prod.properties", "-jar", "vibe-json.jar"]
     volumes:
