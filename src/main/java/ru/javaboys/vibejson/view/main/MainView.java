@@ -36,7 +36,6 @@ public class MainView extends StandardMainView {
 
     @Subscribe
     public void onBeforeShow(final BeforeShowEvent event) {
-        viewNavigators.view(VibeJsonChatView.class).navigate();
-
+        viewNavigators.view(this, VibeJsonChatView.class).navigate();
     }
 }

@@ -5,11 +5,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 import java.util.List;
 import java.util.Map;
 
 @Data
+@EntityDescription("Детали")
 public class DetailsDto {
 
     // JSON Schema для входных параметров (опционально)

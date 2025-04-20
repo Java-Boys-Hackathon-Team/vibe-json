@@ -1,10 +1,12 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 import java.util.Map;
 
 @Data
+@EntityDescription("Детали рабочего процесса")
 public class WorkflowDetailsDto {
 
     // Добавляем эти два поля:

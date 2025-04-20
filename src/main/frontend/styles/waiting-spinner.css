@@ -1,0 +1,13 @@
+/* три точки мигают по очереди */
+.waiting-spinner {
+  font-size: 1.4rem;             /* чуть крупнее текста */
+  letter-spacing: 0.25rem;
+  color: var(--lumo-secondary-text-color);
+  animation: blink 1.2s infinite steps(5, end);
+}
+
+@keyframes blink {
+  0%   { opacity: 0.2; }
+  30%  { opacity: 1;   }
+  100% { opacity: 0.2; }
+}

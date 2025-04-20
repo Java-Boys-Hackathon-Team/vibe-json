@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Ссылка на цель преобразования XSLT")
 public class XsltTransformTargetRefDto {
 
     private UUID id;

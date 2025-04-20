@@ -5,8 +5,10 @@ import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Вызов рабочего процесса")
 public class WorkflowCallDto {
 
     // todo args

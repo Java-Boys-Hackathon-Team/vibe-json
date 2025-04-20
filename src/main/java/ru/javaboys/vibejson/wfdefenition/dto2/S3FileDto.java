@@ -3,8 +3,10 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Файл S3")
 public class S3FileDto {
 
     @NotBlank

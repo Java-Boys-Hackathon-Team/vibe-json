@@ -3,8 +3,10 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Определение авторизации REST")
 public class RestAuthDefDto {
 
     @NotBlank
