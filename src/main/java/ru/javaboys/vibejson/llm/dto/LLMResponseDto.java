@@ -1,10 +1,12 @@
 package ru.javaboys.vibejson.llm.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Map;
 
 @Data
+@Builder
 public class LLMResponseDto {
 
     // ex: "Да, привет у дела тебя?"

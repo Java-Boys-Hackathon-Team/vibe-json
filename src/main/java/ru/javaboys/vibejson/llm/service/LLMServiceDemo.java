@@ -41,13 +41,10 @@ public class LLMServiceDemo implements LLMService {
                   ? workflowTemplate
                   : null;
 
-          LLMResponseDto dto = new LLMResponseDto();
-          dto.setLLMChatMsg(chatMsg);
-          dto.setWorkflow(workflow);
-          dto.setConversationCtx(null);
-          dto.setException(null);
-
-          return dto;
+          return LLMResponseDto.builder()
+                  .LLMChatMsg(chatMsg)
+                  .workflow(workflow)
+                  .build();
      }
 
      private Resource getRandomWorkflowResource() {

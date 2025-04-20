@@ -61,9 +61,7 @@ public class LLMServiceMTS implements LLMService {
         ChatCompletionResponseDTO response = gptmtsClient.getAnswer(req);
         String answer = response.getChoices().get(0).getMessage().getContent();
 
-        LLMResponseDto resp = new LLMResponseDto();
-        resp.setLLMChatMsg(answer);
-        return resp;
+        return LLMResponseDto.builder().LLMChatMsg(answer).build();
     }
 
 }

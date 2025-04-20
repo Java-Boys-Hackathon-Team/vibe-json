@@ -32,3 +32,4 @@ webpack.generated.js
 
 .idea
 /all_java_code.txt
+/.env
