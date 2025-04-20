@@ -1,13 +1,28 @@
 package ru.javaboys.vibejson.view.vibejsonchat;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.Route;
+
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
 import io.jmix.core.security.CurrentAuthentication;
@@ -25,30 +40,21 @@ import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.JsonDslSchema;
 import ru.javaboys.vibejson.entity.SenderType;
 import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 import ru.javaboys.vibejson.llm.service.LLMService;
+import ru.javaboys.vibejson.view.login.LoginView;
 import ru.javaboys.vibejson.view.main.MainView;
-
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 @Route(value = "vibe-json-chat", layout = MainView.class)
 @ViewController(id = "VibeJsonChatView")
 @ViewDescriptor(path = "vibe-json-chat.xml")
 @CssImport("./styles/waiting-spinner.css")
 public class VibeJsonChatView extends StandardView {
+    private static final Logger log = LoggerFactory.getLogger(LoginView.class);
 
     private static final String FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL = """
             select m.jsonDslSchema.schemaText
@@ -124,6 +130,23 @@ public class VibeJsonChatView extends StandardView {
 
         // default
         llmComboBox.setValue(llmServiceMap.get("lLMServiceDemo"));
+
+        getContent().getElement().executeJs(
+                String.format("""
+                        const textarea = this.querySelector('[id$=\\"%s\\"]');\
+                        if (!textarea) return;\
+                        textarea.addEventListener('keydown', function(e) {\
+                          if (e.key === 'Enter' && e.ctrlKey) {\
+                            e.preventDefault();\
+                            textarea.value += '\\n';\
+                          } else if (e.key === 'Enter') {\
+                            e.preventDefault();\
+                            this.$server.sendPrompt(textarea.value);\
+                            textarea.value = "";\
+                          }\
+                        }.bind(this));""", promptInput.getId().orElse(null))
+        );
+
     }
 
     @Subscribe
@@ -179,6 +202,18 @@ public class VibeJsonChatView extends StandardView {
 
     @Subscribe(id = "sendButton", subject = "clickListener")
     public void onSendButtonClick(final ClickEvent<JmixButton> event) {
+        // Считываем текст промпта пользователя
+        String prompt = promptInput.getValue();
+        if (prompt == null || prompt.isBlank()) {
+            warn("Пустое сообщение");
+            return;
+        }
+
+        sendPrompt(prompt);
+    }
+
+    @ClientCallable
+    private void sendPrompt(String prompt) {
         // Берём выбранную модель из ComboBox
         LLMService llmService = llmComboBox.getValue();
         if (llmService == null) {
@@ -186,17 +221,11 @@ public class VibeJsonChatView extends StandardView {
             return;
         }
 
-        // Считываем текст промпта пользователя
-        String prompt = promptInput.getValue();
-        if (prompt == null || prompt.isBlank()) {
-            return;
-        }
-
         // Получаем (или создаём) беседу
         Conversation conversation = ensureConversation();
 
         // Сохраняем сообщение пользователя и показываем в чате
-        ChatMessage userMsg = saveUserMessage(conversation, promptInput.getValue());
+        ChatMessage userMsg = saveUserMessage(conversation, prompt);
         appendToChat(userMsg);
 
         // блокируем ввод пока ждём LLM
@@ -376,10 +405,16 @@ public class VibeJsonChatView extends StandardView {
 
         CompletableFuture
                 .supplyAsync(
-                        () -> systemAuthenticator.withUser(
-                                username,
-                                () -> llmService.userPromptToWorkflow(conversation, prompt)
-                        ),
+                        () -> {
+                            long startedAt = System.currentTimeMillis();
+                            log.info("---> Prompt process stated; conversationId = {}", conversation.getId());
+                            LLMResponseDto dto = systemAuthenticator.withUser(username,
+                                    () -> llmService.userPromptToWorkflow(conversation, prompt));
+                            log.info("---> Prompt process finished(took {} ms); conversationId = {}",
+                                    System.currentTimeMillis() - startedAt,
+                                    conversation.getId());
+                            return dto;
+                        },
                         asyncPool
                 )
                 .whenComplete((dto, ex) ->
