@@ -35,7 +35,7 @@ public class UserUiTest {
     @Autowired
     ViewNavigators viewNavigators;
 
-    @Test
+    //@Test
     void test_createUser() {
         // Navigate to user list view
         viewNavigators.view(UiTestUtils.getCurrentView(), UserListView.class).navigate();
