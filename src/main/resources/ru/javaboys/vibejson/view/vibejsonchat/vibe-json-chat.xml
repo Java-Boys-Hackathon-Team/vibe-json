@@ -24,7 +24,15 @@
     <layout>
         <split id="mainHBox" width="100%" height="100%">
             <vbox id="leftConversationPanel" width="25%" height="100%">
-                <button id="createConversation" text="Новый чат"/>
+                <comboBox id="llmComboBox"
+                          width="100%"
+                          label="Выбрать алгоритм"
+                          required="true"
+                          optionsEnum="ru.javaboys.vibejson.model.LLMModel"/>
+
+                <button id="createConversation"
+                        text="Новый чат" width="100%"/>
+
                 <dataGrid id="conversationsDataGrid" dataContainer="conversationDc" minWidth="100px" width="100%"
                           height="100%">
                     <actions showInContextMenuEnabled="false">
@@ -46,12 +54,6 @@
 
             <split id="chatVBox" width="75%" height="100%">
                 <vbox width="60%" height="100%" spacing="true">
-
-                    <comboBox id="llmComboBox"
-                              width="200px"
-                              required="true"
-                              property="llm"/>
-
                     <scroller id="chatScroller"
                               width="100%" height="70%"
                               flexGrow="1"
@@ -83,10 +85,10 @@
                                 height="100%"
                                 flexGrow="1"
                                 mode="JSON"
-                                label="msg://jsonCodeEditor.label" readOnly="true"/>
+                                label="msg://jsonCodeEditor.label"
+                                readOnly="true"/>
 
                     <hbox width="100%" spacing="true">
-                        <label value="Schema"/>
                         <button id="copyJsonButton"
                                 icon="COPY"
                                 text="Копировать JSON"

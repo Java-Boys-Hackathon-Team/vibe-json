@@ -47,6 +47,11 @@ public class LLMServiceDemo implements LLMService {
                   .build();
      }
 
+     @Override
+     public String getModelCode() {
+          return "Demo";
+     }
+
      private Resource getRandomWorkflowResource() {
           int randomIndex = ThreadLocalRandom.current().nextInt(1, 6);
           String path = String.format("wf-defenition/examples/wf-%d.json", randomIndex);

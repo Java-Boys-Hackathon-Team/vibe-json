@@ -30,7 +30,6 @@ import org.springframework.security.core.Authentication;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.JsonDslSchema;
-import ru.javaboys.vibejson.entity.LLMModel;
 import ru.javaboys.vibejson.entity.SenderType;
 import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 import ru.javaboys.vibejson.llm.service.LLMService;
@@ -72,7 +71,7 @@ public class VibeJsonChatView extends StandardView {
     private JmixCodeEditor jsonTextArea;
 
     @ViewComponent
-    private JmixComboBox<LLMModel> llmComboBox;
+    private JmixComboBox<LLMService> llmComboBox;
 
     @ViewComponent
     private DataGrid<Conversation> conversationsDataGrid;
@@ -119,8 +118,11 @@ public class VibeJsonChatView extends StandardView {
 
     @Subscribe
     public void onInit(final InitEvent event) {
-        llmComboBox.setItems(LLMModel.values());
-        llmComboBox.setItemLabelGenerator(LLMModel::getCaption);
+        llmComboBox.setItems(llmServiceMap.values());
+        llmComboBox.setItemLabelGenerator(LLMService::getModelCode);
+
+        // default
+        llmComboBox.setValue(llmServiceMap.get("lLMServiceDemo"));
     }
 
     @Subscribe
@@ -177,8 +179,8 @@ public class VibeJsonChatView extends StandardView {
     @Subscribe(id = "sendButton", subject = "clickListener")
     public void onSendButtonClick(final ClickEvent<JmixButton> event) {
         // Берём выбранную модель из ComboBox
-        LLMModel model = llmComboBox.getValue();
-        if (model == null) {
+        LLMService llmService = llmComboBox.getValue();
+        if (llmService == null) {
             warn("Выберите модель");
             return;
         }
@@ -200,7 +202,7 @@ public class VibeJsonChatView extends StandardView {
         sendButton.setEnabled(false);
         promptInput.setEnabled(false);
 
-        callLlmAsync(model, conversation, prompt);
+        callLlmAsync(llmService, conversation, prompt);
     }
 
     @Subscribe(id = "copyJsonButton", subject = "clickListener")
@@ -360,13 +362,11 @@ public class VibeJsonChatView extends StandardView {
         promptInput.clear();
     }
 
-    private void callLlmAsync(LLMModel model,
+    private void callLlmAsync(LLMService llmService,
                               Conversation conversation,
                               String prompt) {
 
         Authentication auth = currentAuthentication.getAuthentication();
-
-        LLMService llmService = llmServiceMap.get(model.getBeanName());
 
         UI ui = UI.getCurrent();
 
