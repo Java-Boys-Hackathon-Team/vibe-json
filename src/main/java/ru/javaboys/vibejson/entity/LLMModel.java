@@ -2,7 +2,8 @@ package ru.javaboys.vibejson.entity;
 
 public enum LLMModel {
     MTC("lLMServiceMTS", "MTC"),
-    DEMO("lLMServiceDemo", "DEMO");
+    DEMO("lLMServiceDemo", "DEMO"),
+    CHATGPT("lLMServiceChatGPT", "CHAT_GPT");
 
     private final String beanName;
     private final String caption;
