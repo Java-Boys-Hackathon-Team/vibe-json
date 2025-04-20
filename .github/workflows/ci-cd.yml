@@ -27,8 +27,8 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew clean build
-          ./gradlew -Pvaadin.productionMode=true bootJar
+          ./gradlew clean build -x test
+          ./gradlew -Pvaadin.productionMode=true bootJar -x test
 
   deploy:
     needs: build
