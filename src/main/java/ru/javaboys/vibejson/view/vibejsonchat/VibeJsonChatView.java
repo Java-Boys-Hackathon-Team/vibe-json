@@ -22,6 +22,7 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.ItemClickEvent;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.Route;
 
@@ -79,6 +80,9 @@ public class VibeJsonChatView extends StandardView {
 
     @Autowired
     private Map<String, LLMService> llmServiceMap;
+
+    @ViewComponent
+    private Image imgSlider;
 
     @ViewComponent
     private JmixCodeEditor jsonTextArea;
@@ -142,6 +146,8 @@ public class VibeJsonChatView extends StandardView {
 
         // default
         llmComboBox.setValue(llmServiceMap.get("lLMServiceDemo"));
+
+        imgSlider.setVisible(false);
 
         getContent().getElement().executeJs(
                 String.format("""
@@ -243,6 +249,7 @@ public class VibeJsonChatView extends StandardView {
         // блокируем ввод пока ждём LLM
         sendButton.setEnabled(false);
         promptInput.setEnabled(false);
+        imgSlider.setVisible(true);
 
         callLlmAsync(llmService, conversation, prompt);
     }
@@ -414,6 +421,7 @@ public class VibeJsonChatView extends StandardView {
     private void processLlmResult(LLMResponseDto dto, Throwable exception) {
         sendButton.setEnabled(true);
         promptInput.setEnabled(true);
+        imgSlider.setVisible(false);
 
         if (exception != null) {
             notifications.create("Ошибка LLM: " + exception.getMessage())
@@ -447,6 +455,7 @@ public class VibeJsonChatView extends StandardView {
 
         // очищаем поле ввода
         promptInput.clear();
+        promptInput.focus();
     }
 
     private void callLlmAsync(LLMService llmService,

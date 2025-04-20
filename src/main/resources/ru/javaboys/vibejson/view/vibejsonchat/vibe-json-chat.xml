@@ -72,8 +72,14 @@
                                   width="100%"
                                   placeholder="Введите текст…">
                         </textArea>
-                        <button id="sendButton"
-                                text="Send"/>
+                        <vbox width="15%" height="100%" spacing="false">
+                            <button id="sendButton"
+                                    text="Send"/>
+                            <image id="imgSlider"
+                                   maxWidth="60px"
+                                   maxHeight="60px"
+                                   resource="icons/slider.gif"/>
+                        </vbox>
                     </hbox>
                 </vbox>
 
