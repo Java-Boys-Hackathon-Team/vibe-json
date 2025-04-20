@@ -78,6 +78,16 @@
                 </vbox>
 
                 <vbox width="40%" height="100%" spacing="true">
+                    <hbox id="jsonTextAreaButtons" width="100%" spacing="true">
+                        <button id="jsonTextAreaEdit"
+                                text="Редактировать"
+                                title="Редактировать"
+                                icon="EDIT"/>
+                        <button id="jsonTextAreaCopy"
+                                text="Скопировать"
+                                title="Скопировать в буфер обмена"
+                                icon="COPY"/>
+                    </hbox>
                     <codeEditor id="jsonTextArea"
                                 width="100%"
                                 height="100%"
@@ -85,13 +95,6 @@
                                 mode="JSON"
                                 label="msg://jsonCodeEditor.label"
                                 readOnly="true"/>
-
-                    <hbox width="100%" spacing="true">
-                        <button id="copyJsonButton"
-                                icon="COPY"
-                                text="Копировать JSON"
-                                alignSelf="END"/>
-                    </hbox>
                 </vbox>
             </split>
         </split>

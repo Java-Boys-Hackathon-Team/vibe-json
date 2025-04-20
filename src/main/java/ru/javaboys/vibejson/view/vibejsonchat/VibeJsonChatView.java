@@ -1,5 +1,7 @@
 package ru.javaboys.vibejson.view.vibejsonchat;
 
+import static io.jmix.flowui.app.inputdialog.InputParameter.stringParameter;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Map;
@@ -27,10 +29,15 @@ import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
 import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.core.security.SystemAuthenticator;
+import io.jmix.flowui.Dialogs;
 import io.jmix.flowui.Notifications;
+import io.jmix.flowui.UiComponents;
+import io.jmix.flowui.app.inputdialog.DialogActions;
+import io.jmix.flowui.app.inputdialog.DialogOutcome;
 import io.jmix.flowui.component.combobox.JmixComboBox;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.textarea.JmixTextArea;
+import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.kit.component.codeeditor.JmixCodeEditor;
 import io.jmix.flowui.model.CollectionContainer;
@@ -46,7 +53,6 @@ import ru.javaboys.vibejson.entity.JsonDslSchema;
 import ru.javaboys.vibejson.entity.SenderType;
 import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 import ru.javaboys.vibejson.llm.service.LLMService;
-import ru.javaboys.vibejson.view.login.LoginView;
 import ru.javaboys.vibejson.view.main.MainView;
 
 @Route(value = "vibe-json-chat", layout = MainView.class)
@@ -54,10 +60,10 @@ import ru.javaboys.vibejson.view.main.MainView;
 @ViewDescriptor(path = "vibe-json-chat.xml")
 @CssImport("./styles/waiting-spinner.css")
 public class VibeJsonChatView extends StandardView {
-    private static final Logger log = LoggerFactory.getLogger(LoginView.class);
+    private static final Logger log = LoggerFactory.getLogger(VibeJsonChatView.class);
 
     private static final String FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL = """
-            select m.jsonDslSchema.schemaText
+            select m.jsonDslSchema
                 from ChatMessage m
                 where m.conversation.id = :conversationId
                   and m.jsonDslSchema is not null
@@ -109,6 +115,12 @@ public class VibeJsonChatView extends StandardView {
 
     @ViewComponent
     private JmixButton sendButton;
+
+    @Autowired
+    private UiComponents uiComponents;
+
+    @Autowired
+    private Dialogs dialogs;
 
     @Autowired
     private Notifications notifications;
@@ -235,8 +247,52 @@ public class VibeJsonChatView extends StandardView {
         callLlmAsync(llmService, conversation, prompt);
     }
 
-    @Subscribe(id = "copyJsonButton", subject = "clickListener")
-    public void onCopyJsonButtonClick(final ClickEvent<JmixButton> event) {
+    @Subscribe(id = "jsonTextAreaEdit", subject = "clickListener")
+    public void onJsonTextAreaEditClick(final ClickEvent<JmixButton> event) {
+        dialogs.createInputDialog(this)
+                .withHeader("Редактирование Json")
+                .withParameters(
+                        stringParameter("json")
+                                .withField(() -> {
+                                    JmixCodeEditor editor = uiComponents.create(JmixCodeEditor.class);
+                                    editor.setValue(jsonTextArea.getValue());
+                                    return editor;
+                                })
+                )
+                .withLabelsPosition(Dialogs.InputDialogBuilder.LabelsPosition.TOP)
+                .withWidth("850px")
+                .withValidator(context -> {
+                    String json = context.getValue("json");
+                    try {
+                        mapper.readTree(json);
+                        return ValidationErrors.none();
+                    } catch (Exception e) {
+                        return ValidationErrors.of("Json невалидный");
+                    }
+                })
+                .withActions(DialogActions.OK_CANCEL)
+                .withCloseListener(closeEvent -> {
+                    if (closeEvent.closedWith(DialogOutcome.OK)) {
+                        String json = closeEvent.getValue("json");
+
+                        Optional<JsonDslSchema> jsonOpt = dataManager.loadValue(
+                                        FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL, JsonDslSchema.class)
+                                .parameter("conversationId", currentConversation.getId())
+                                .optional();
+                        if (jsonOpt.isPresent()) {
+                            JsonDslSchema jsonDslSchema = jsonOpt.get();
+                            jsonDslSchema.setSchemaText(json);
+
+                            jsonTextArea.setValue(json);
+                            dataManager.save(jsonDslSchema);
+                        }
+                    }
+                })
+                .open();
+    }
+
+    @Subscribe(id = "jsonTextAreaCopy", subject = "clickListener")
+    public void onJsonTextAreaCopyClick(final ClickEvent<JmixButton> event) {
         String json = jsonTextArea.getValue();
         if (json == null || json.isBlank()) {
             Notification.show("Нечего копировать");
@@ -304,13 +360,13 @@ public class VibeJsonChatView extends StandardView {
     }
 
     private void loadLatestWorkflow(Conversation conversation) {
-        Optional<String> jsonOpt = dataManager.loadValue(
-                        FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL, String.class)
+        Optional<JsonDslSchema> jsonOpt = dataManager.loadValue(
+                        FIND_LATEST_SCHEMA_BY_CONVERSATION_SQL, JsonDslSchema.class)
                 .parameter("conversationId", conversation.getId())
                 .optional();
 
         if (jsonOpt.isPresent()) {
-            jsonTextArea.setValue(formatJson(jsonOpt.get()));
+            jsonTextArea.setValue(formatJson(jsonOpt.get().getSchemaText()));
             jsonTextArea.scrollIntoView();
         } else {
             jsonTextArea.clear();
