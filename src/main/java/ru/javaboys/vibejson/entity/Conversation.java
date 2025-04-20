@@ -1,21 +1,21 @@
 package ru.javaboys.vibejson.entity;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @JmixEntity
 @Table(name = "CONVERSATION")
@@ -38,8 +38,19 @@ public class Conversation {
     @Column(name = "TITLE")
     private String title;
 
-    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.REMOVE)
     private List<ChatMessage> messages;
+
+    @Column(name = "SERVICE")
+    private String service;
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
 
     public List<ChatMessage> getMessages() {
         return messages;
