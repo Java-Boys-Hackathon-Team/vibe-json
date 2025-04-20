@@ -2,8 +2,10 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Cron")
 public class CronDto {
 
     // хотя бы один из них должен быть указан, но валидация будет на уровне сервиса

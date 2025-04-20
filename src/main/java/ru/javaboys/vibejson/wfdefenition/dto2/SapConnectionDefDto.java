@@ -5,8 +5,10 @@ import java.util.Map;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Определение подключения SAP")
 public class SapConnectionDefDto {
 
     @NotBlank

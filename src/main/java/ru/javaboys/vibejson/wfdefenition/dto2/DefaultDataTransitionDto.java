@@ -3,8 +3,10 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Переход к данным по умолчанию")
 public class DefaultDataTransitionDto {
 
     @Size(max = 255)

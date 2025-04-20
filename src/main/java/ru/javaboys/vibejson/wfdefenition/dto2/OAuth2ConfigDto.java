@@ -2,8 +2,10 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Конфигурация OAuth2")
 public class OAuth2ConfigDto {
 
     @NotBlank

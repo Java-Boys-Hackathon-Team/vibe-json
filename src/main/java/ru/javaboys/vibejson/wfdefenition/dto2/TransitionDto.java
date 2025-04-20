@@ -3,8 +3,10 @@ package ru.javaboys.vibejson.wfdefenition.dto2;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
+import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
+@EntityDescription("Переход")
 public class TransitionDto {
 
     private String next;
