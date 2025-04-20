@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Vibe-json Jmix Application" type="JmixRunApplication">
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/.env" />
+    </option>
     <option name="MAIN_CLASS_NAME" value="ru.javaboys.vibejson.VibeJsonApplication" />
     <module name="vibe-json.main" />
     <shortenClasspath name="ARGS_FILE" />
