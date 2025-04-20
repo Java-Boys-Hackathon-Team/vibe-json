@@ -64,4 +64,8 @@ public class LLMServiceMTS implements LLMService {
         return LLMResponseDto.builder().LLMChatMsg(answer).build();
     }
 
+    @Override
+    public String getModelCode() {
+        return "MTS";
+    }
 }

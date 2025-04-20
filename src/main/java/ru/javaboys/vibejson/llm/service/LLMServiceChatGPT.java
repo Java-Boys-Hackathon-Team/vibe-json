@@ -24,4 +24,9 @@ public class LLMServiceChatGPT implements LLMService {
 
         return  LLMResponseDto.builder().LLMChatMsg(resp).build();
     }
+
+    @Override
+    public String getModelCode() {
+        return "ChatGPT";
+    }
 }
