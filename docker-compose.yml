@@ -13,20 +13,20 @@ services:
       - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - PG_DATASOURCE_URL=jdbc:postgresql://db:5432/vibejson
+      - PG_DATASOURCE_URL=jdbc:postgresql://vibe-db:5432/vibejson
       - PG_NAME=pgadmin
       - PG_PASS=pgadmin
       - OPENAI_API_KEY
     tty: true
     depends_on:
-      - db
+      - vibe-db
 
-  db:
+  vibe-db:
     build:
       dockerfile: ./Dockerfile
       context: postgres
     restart: always
-    container_name: db
+    container_name: vibe-db
     ports:
       - "25433:5432"
     volumes:
@@ -49,7 +49,7 @@ services:
     ports:
       - "5051:80"
     depends_on:
-      - db
+      - vibe-db
 
 volumes:
   postgres_data:
