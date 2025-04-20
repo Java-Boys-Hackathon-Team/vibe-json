@@ -59,11 +59,9 @@
                               flexGrow="1"
                               scrollBarsDirection="VERTICAL">
 
-                        <!-- сам текст чата.  autogrow=false, чтобы не «распухал» -->
                         <textArea id="chatTextArea"
                                   width="100%" height="100%"
                                   autogrow="false"
-                                  readOnly="true"
                                   placeholder="msg://chatTextArea1.placeholder"/>
                     </scroller>
 

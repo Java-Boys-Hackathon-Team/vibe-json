@@ -3,7 +3,7 @@ package ru.javaboys.vibejson.llm.service;
 import io.micrometer.core.instrument.util.IOUtils;
 import jakarta.annotation.PostConstruct;
 import net.datafaker.Faker;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.entity.Conversation;
@@ -54,7 +54,7 @@ public class LLMServiceDemo implements LLMService {
 
      private Resource getRandomWorkflowResource() {
           int randomIndex = ThreadLocalRandom.current().nextInt(1, 6);
-          String path = String.format("wf-defenition/examples/wf-%d.json", randomIndex);
-          return new FileSystemResource(path);
+          String path = String.format("wf-defenition/wf-%d.json", randomIndex);
+          return new ClassPathResource(path);
      }
 }
