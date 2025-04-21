@@ -1,5 +1,6 @@
-package ru.javaboys.vibejson.llm.service.chatgpt4odeep;
+package ru.javaboys.vibejson.llm.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
 import ru.javaboys.vibejson.wfdefenition.dto2.ActivityDto;
@@ -13,12 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class WorkflowKnowledgeBase {
 
     /** Получить допустимые типы активити (строковые значения) */
     @Tool(description = "Получить допустимые типы activities (активити)")
     public List<String> getAllowedActivityTypes() {
+        log.info("Call Tool getAllowedActivityTypes");
         return Arrays.stream(ActivityType.values())
                 .map(ActivityType::getType)
                 .collect(Collectors.toList());
@@ -35,6 +38,7 @@ public class WorkflowKnowledgeBase {
     /** Получить допустимые типы стартеров (например, KafkaConsumer, Scheduler и т.п.) */
     @Tool(description = "Получить допустимые типы starters (стартеров)")
     public List<String> getAllowedStarterTypes() {
+        log.info("Call Tool getAllowedStarterTypes");
         return Arrays.stream(StarterDto.class.getDeclaredFields())
                 .filter(f -> f.getType().getSimpleName().endsWith("Dto"))
                 .map(Field::getName)
@@ -45,6 +49,7 @@ public class WorkflowKnowledgeBase {
     /** Валидация workflow: типы и обязательные параметры */
     @Tool(description = "Метод позволяет выполнить валидацию workflow")
     public ValidationResult validateWorkflow(WorkflowDefinitionDto workflow) {
+        log.info("Call Tool validateWorkflow with params {}", workflow);
         ValidationResult result = new ValidationResult();
 
         if (workflow.getDetails() == null) {

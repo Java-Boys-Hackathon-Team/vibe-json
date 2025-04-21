@@ -5,7 +5,6 @@ import jakarta.annotation.PostConstruct;
 import net.datafaker.Faker;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 
@@ -14,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Service("lLMServiceDemo")
+//@Service("lLMServiceDemo")
 public class LLMServiceDemo implements LLMService {
 
      private final Faker faker = new Faker();

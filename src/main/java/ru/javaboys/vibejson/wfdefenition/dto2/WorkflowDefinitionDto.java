@@ -15,7 +15,7 @@ public class WorkflowDefinitionDto {
 
     @NotBlank
     @Size(max = 255)
-    private String type; // чаще всего "complex"
+    private String type = "complex"; // чаще всего "complex"
 
     @NotBlank
     @Size(max = 255)
@@ -33,7 +33,7 @@ public class WorkflowDefinitionDto {
 
     private CompiledDto compiled;
 
-    private FlowEditorConfigDto flowEditorConfig;
+//    private FlowEditorConfigDto flowEditorConfig;
 
     // Метод для вывода всего workflow в JSON (например, для ответа UI)
     public String toJson() {

@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.llm.service.chatgpt4odeep;
+package ru.javaboys.vibejson.llm.service;
 
 import lombok.Getter;
 

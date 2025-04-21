@@ -157,8 +157,8 @@ public class VibeJsonChatView extends StandardView {
         // default
         String serviceName = Optional.ofNullable(currentConversation)
                 .map(Conversation::getService)
-                .orElse("lLMServiceDemo");
-        llmComboBox.setValue(llmServiceMap.get(serviceName));
+                .orElse("Algo1");
+        llmComboBox.setValue(llmServiceMap.get("Algo1"));
 
         imgSlider.setVisible(false);
 
@@ -167,7 +167,7 @@ public class VibeJsonChatView extends StandardView {
                         const textarea = this.querySelector('[id$=\\"%s\\"]');\
                         if (!textarea) return;\
                         textarea.addEventListener('keydown', function(e) {\
-                          if (e.key === 'Enter' && e.ctrlKey) {\
+                          if (e.key === 'Enter' && e.shiftKey) {\
                             e.preventDefault();\
                             textarea.value += '\\n';\
                           } else if (e.key === 'Enter') {\
@@ -216,7 +216,7 @@ public class VibeJsonChatView extends StandardView {
     public void onConversationsDataGridItemClick(final ItemClickEvent<Conversation> event) {
         // текущая выбранная беседа
         currentConversation = event.getItem();
-        llmComboBox.setValue(llmServiceMap.get("lLMService" + currentConversation.getService()));
+        llmComboBox.setValue(llmServiceMap.get("Algo1"));
 
         //  Когда conversation не выбран: очищаем чат и JSON‑панель и выходим
         if (currentConversation == null) {

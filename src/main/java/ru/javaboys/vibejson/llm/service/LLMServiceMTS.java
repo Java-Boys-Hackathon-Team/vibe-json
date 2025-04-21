@@ -3,21 +3,20 @@ package ru.javaboys.vibejson.llm.service;
 import io.jmix.core.DataManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.SenderType;
+import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 import ru.javaboys.vibejson.llm.mws.client.GPTMTSClient;
 import ru.javaboys.vibejson.llm.mws.dto.ChatCompletionRequestDTO;
 import ru.javaboys.vibejson.llm.mws.dto.ChatCompletionResponseDTO;
-import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 import ru.javaboys.vibejson.llm.mws.dto.MessageDTO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("lLMServiceMTS")
+//@Service("lLMServiceMTS")
 @RequiredArgsConstructor
 public class LLMServiceMTS implements LLMService {
 
