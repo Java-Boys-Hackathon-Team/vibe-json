@@ -1,32 +1,29 @@
 package ru.javaboys.vibejson.llm.service;
 
-import org.springframework.ai.chat.client.ChatClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
 
-@Service("lLMServiceChatGPT")
+@Service("Algo1")
+@RequiredArgsConstructor
 public class LLMServiceChatGPT implements LLMService {
 
-    private final ChatClient chatClient;
-
-    public LLMServiceChatGPT(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.build();
-    }
+    private final LLMServiceOpenAI llmServiceOpenAI;
 
     @Override
     public LLMResponseDto userPromptToWorkflow(Conversation conversation, String prompt) {
 
-        String resp = chatClient.prompt()
-                .user(prompt)
-                .call()
-                .content();
+        var resp = llmServiceOpenAI.processUserMessage(conversation.getId().toString(), prompt);
 
-        return  LLMResponseDto.builder().LLMChatMsg(resp).build();
+        return LLMResponseDto.builder()
+                .workflow(resp.getWorkflowJson())
+                .LLMChatMsg(resp.getAssistantMessage())
+                .build();
     }
 
     @Override
     public String getModelCode() {
-        return "ChatGPT";
+        return "Algo1";
     }
 }

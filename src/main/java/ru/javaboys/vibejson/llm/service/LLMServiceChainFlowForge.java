@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-@Service
+//@Service("Algo2")
 @RequiredArgsConstructor
 public class LLMServiceChainFlowForge implements LLMService {
 
@@ -80,7 +80,7 @@ public class LLMServiceChainFlowForge implements LLMService {
 
     @Override
     public String getModelCode() {
-        return "Chain Flow Forge";
+        return "Algo2";
     }
 
     //---------------------------------

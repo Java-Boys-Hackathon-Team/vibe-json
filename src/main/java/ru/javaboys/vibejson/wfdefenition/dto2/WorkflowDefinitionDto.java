@@ -1,6 +1,8 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +15,7 @@ public class WorkflowDefinitionDto {
 
     @NotBlank
     @Size(max = 255)
-    private String type; // чаще всего "complex"
+    private String type = "complex"; // чаще всего "complex"
 
     @NotBlank
     @Size(max = 255)
@@ -31,5 +33,17 @@ public class WorkflowDefinitionDto {
 
     private CompiledDto compiled;
 
-    private FlowEditorConfigDto flowEditorConfig;
+//    private FlowEditorConfigDto flowEditorConfig;
+
+    // Метод для вывода всего workflow в JSON (например, для ответа UI)
+    public String toJson() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.findAndRegisterModules();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            return mapper.writeValueAsString(this);
+        } catch (Exception e) {
+            throw new RuntimeException("JSON Workflow serialization error", e);
+        }
+    }
 }
