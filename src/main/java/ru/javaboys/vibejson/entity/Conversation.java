@@ -1,12 +1,5 @@
 package ru.javaboys.vibejson.entity;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
@@ -16,6 +9,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @JmixEntity
 @Table(name = "CONVERSATION")
