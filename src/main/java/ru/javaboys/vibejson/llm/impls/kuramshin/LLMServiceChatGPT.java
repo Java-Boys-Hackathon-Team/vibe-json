@@ -15,7 +15,11 @@ public class LLMServiceChatGPT implements LLMService {
     @Override
     public LLMResponseDto userPromptToWorkflow(Conversation conversation, String prompt) {
 
-        var resp = openAIService.processUserMessage(conversation.getId().toString(), prompt);
+        var messages = conversation.getMessages();
+
+        var currentWorkflow = !messages.isEmpty() ? messages.get(messages.size() - 1).getJsonDslSchema().getSchemaText() : null;
+
+        var resp = openAIService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
 
         return LLMResponseDto.builder()
                 .workflow(resp.getWorkflowJson())

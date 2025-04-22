@@ -1,0 +1,236 @@
+{
+  "type": "workflow",
+  "name": "ComplexIntegrationWorkflow",
+  "description": "A complex integration workflow with multiple starters and activities.",
+  "version": 1,
+  "tenantId": "tenant_123",
+  "details": {
+    "inputValidateSchema": {},
+    "outputValidateSchema": {},
+    "starters": [
+      {
+        "type": "KafkaConsumer",
+        "name": "KafkaStarter",
+        "description": "Starts the workflow on receiving a Kafka message.",
+        "kafkaConsumer": {
+          "topic": "topic_1",
+          "connectionDef": {
+            "bootstrapServers": "localhost:9092",
+            "authDef": {
+              "type": "sasl",
+              "sasl": {
+                "protocol": "SASL_SSL",
+                "mechanism": "PLAIN",
+                "username": "user",
+                "password": "pass",
+                "sslDef": {
+                  "trustStoreType": "JKS",
+                  "trustStoreCertificates": "certs"
+                },
+                "tokenUrl": "http://token.url"
+              }
+            }
+          },
+          "payloadValidateSchema": {},
+          "keyValidateSchema": {},
+          "headersValidateSchema": {},
+          "outputTemplate": {}
+        }
+      },
+      {
+        "type": "Scheduler",
+        "name": "DailyScheduler",
+        "description": "Triggers the workflow daily at midnight.",
+        "scheduler": {
+          "type": "cron",
+          "cron": {
+            "dayOfWeek": "*",
+            "dayOfMonth": "*",
+            "month": "*",
+            "hour": "0",
+            "minute": "0"
+          },
+          "startDateTime": "2023-01-01T00:00:00Z",
+          "endDateTime": "2024-01-01T00:00:00Z",
+          "outputTemplate": {}
+        }
+      }
+    ],
+    "sendToKafkaConfig": null,
+    "sendToS3Config": null,
+    "restCallConfig": null,
+    "xsltTransformConfig": null,
+    "databaseCallConfig": null,
+    "sendToRabbitmqConfig": null,
+    "awaitForMessageConfig": null,
+    "sendToSapConfig": null
+  },
+  "compiled": {
+    "start": "activity_1",
+    "activities": [
+      {
+        "id": "activity_1",
+        "description": "Initial REST call to fetch data.",
+        "transition": "activity_2",
+        "type": "rest_call",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "rest_call",
+            "details": {
+              "restCallConfig": {
+                "restCallTemplateDef": {
+                  "curl": "curl -X GET http://api.example.com/data",
+                  "method": "GET",
+                  "url": "http://api.example.com/data",
+                  "bodyTemplate": "",
+                  "headers": {
+                    "Authorization": "Bearer token"
+                  },
+                  "authDef": {
+                    "type": "oauth2",
+                    "oauth2": {
+                      "issuerLocation": "http://auth.example.com",
+                      "clientId": "client_id",
+                      "clientSecret": "client_secret",
+                      "grantType": "client_credentials"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "retryConfig": {
+            "maxAttempts": 3,
+            "delay": "PT5M",
+            "strategy": "exponential",
+            "retryOnErrors": ["500", "502", "503"]
+          },
+          "outputFilter": {}
+        }
+      },
+      {
+        "id": "activity_2",
+        "description": "Transform data using XSLT.",
+        "transition": "activity_3",
+        "type": "xslt_transform",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "xslt_transform",
+            "details": {
+              "xsltTransformConfig": {
+                "xsltTemplate": "<xsl:stylesheet version=\"1.0\">...</xsl:stylesheet>",
+                "xsltTransformTarget": "<xml>...</xml>"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "activity_3",
+        "description": "Send transformed data to RabbitMQ.",
+        "transition": "activity_4",
+        "type": "send_to_rabbitmq",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_rabbitmq",
+            "details": {
+              "sendToRabbitmqConfig": {
+                "connectionDef": {
+                  "userName": "rabbit_user",
+                  "userPass": "rabbit_pass",
+                  "addresses": ["localhost:5672"],
+                  "virtualHost": "/"
+                },
+                "exchange": "exchange_1",
+                "routingKey": "key_1",
+                "message": "Transformed data",
+                "messageProperties": {}
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "activity_4",
+        "description": "Parallel processing of data.",
+        "transition": "activity_5",
+        "type": "parallel",
+        "branches": ["activity_5", "activity_6"]
+      },
+      {
+        "id": "activity_5",
+        "description": "Database call to store data.",
+        "transition": "activity_7",
+        "type": "db_call",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "db_call",
+            "details": {
+              "databaseCallConfig": {
+                "databaseCallDef": {
+                  "type": "sql",
+                  "sql": "INSERT INTO table (column) VALUES (?)",
+                  "inParameters": {
+                    "param1": "value1"
+                  }
+                },
+                "dataSourceId": "db_source_1",
+                "dataSourceDef": {
+                  "url": "jdbc:mysql://localhost:3306/db",
+                  "username": "db_user",
+                  "password": "db_pass",
+                  "driverClassName": "com.mysql.jdbc.Driver",
+                  "type": "mysql"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "activity_6",
+        "description": "Send data to SAP.",
+        "transition": "activity_7",
+        "type": "send_to_sap",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "send_to_sap",
+            "details": {
+              "sendToSapConfig": {
+                "connectionDef": {
+                  "name": "SAP Connection",
+                  "props": {
+                    "prop1": "value1"
+                  }
+                },
+                "idoc": {
+                  "xml": "<IDOC>...</IDOC>"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "activity_7",
+        "description": "Final transformation and output.",
+        "transition": null,
+        "type": "transform",
+        "workflowCall": {
+          "workflowDef": {
+            "type": "transform",
+            "details": {
+              "transformConfig": {
+                "type": "json",
+                "target": {
+                  "key": "final_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outputTemplate": {}
+  }
+}
