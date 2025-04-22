@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.javaboys.vibejson.utils.CommonUtils;
-import ru.javaboys.vibejson.wfdefenition.dto2.WorkflowDefinitionDto;
+import ru.javaboys.vibejson.wfdefenition.root.WorkflowDefinitionDto;
 
 import java.io.File;
 import java.io.IOException;

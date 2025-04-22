@@ -1,7 +1,6 @@
 package ru.javaboys.vibejson.view.workflowconfiguration;
 
 import com.vaadin.flow.router.Route;
-
 import io.jmix.flowui.view.DialogMode;
 import io.jmix.flowui.view.LookupComponent;
 import io.jmix.flowui.view.StandardListView;

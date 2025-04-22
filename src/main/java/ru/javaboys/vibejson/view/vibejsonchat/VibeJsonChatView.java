@@ -1,21 +1,5 @@
 package ru.javaboys.vibejson.view.vibejsonchat;
 
-import static io.jmix.flowui.app.inputdialog.InputParameter.stringParameter;
-
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
@@ -28,7 +12,6 @@ import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.Route;
-
 import io.jmix.core.DataManager;
 import io.jmix.core.Metadata;
 import io.jmix.core.security.CurrentAuthentication;
@@ -51,13 +34,28 @@ import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewComponent;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.JsonDslSchema;
 import ru.javaboys.vibejson.entity.SenderType;
-import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
-import ru.javaboys.vibejson.llm.service.LLMService;
+import ru.javaboys.vibejson.llm.common.LLMResponseDto;
+import ru.javaboys.vibejson.llm.common.LLMService;
 import ru.javaboys.vibejson.view.main.MainView;
+
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import static io.jmix.flowui.app.inputdialog.InputParameter.stringParameter;
 
 @Route(value = "vibe-json-chat", layout = MainView.class)
 @ViewController(id = "VibeJsonChatView")

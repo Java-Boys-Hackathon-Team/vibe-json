@@ -1,10 +1,10 @@
 package ru.javaboys.vibejson.security;
 
-import ru.javaboys.vibejson.entity.User;
 import io.jmix.securitydata.user.AbstractDatabaseUserRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import ru.javaboys.vibejson.entity.User;
 
 import java.util.Collection;
 

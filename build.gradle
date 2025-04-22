@@ -52,6 +52,7 @@ dependencies {
 
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory-jdbc'
 
     implementation 'com.kjetland:mbknor-jackson-jsonschema_2.13:1.0.39'
 
