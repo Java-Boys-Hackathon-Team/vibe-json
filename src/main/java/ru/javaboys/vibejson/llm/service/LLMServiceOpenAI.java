@@ -2,6 +2,7 @@ package ru.javaboys.vibejson.llm.service;
 
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -24,17 +25,16 @@ public class LLMServiceOpenAI {
     private final ChatClient chatClient;
 
     public LLMServiceOpenAI(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.build();
+        this.chatClient = chatClientBuilder
+                .defaultAdvisors(new SimpleLoggerAdvisor())
+                .build();
     }
 
-//    @Autowired
-//    private OpenAiChatModel chatModel;
     // Альтернативно можно использовать ChatClient, тогда:  @Autowired private ChatClient chatClient;
     @Autowired
     private WorkflowKnowledgeBase knowledgeBase;
 
     // Храним состояния диалогов в памяти (для простоты – в мапе)
-//    private final Map<String, WorkflowDefinitionDto> currentWorkflows = new ConcurrentHashMap<>();
     private final Map<String, String> currentWorkflows = new ConcurrentHashMap<>();
     private final Map<String, List<Message>> conversationHistories = new ConcurrentHashMap<>();
 
@@ -55,7 +55,7 @@ public class LLMServiceOpenAI {
         }
         promptMessages.add(userMsg);
 
-//        // Настраиваем опции GPT: указываем, какие инструменты может вызывать
+        // Настраиваем опции GPT: указываем, какие инструменты может вызывать
         OpenAiChatOptions options = OpenAiChatOptions.builder()
                 .model("gpt-4o")  // указываем модель GPT-4 (или ее deployment name, если Azure OpenAI)
                 .temperature(0.2) // относительно низкая температура для предсказуемости
@@ -64,7 +64,11 @@ public class LLMServiceOpenAI {
 
         // Вызываем модель с подготовленным prompt
 
-        String fullResponse = chatClient.prompt(new Prompt(promptMessages)).tools(knowledgeBase).call().content();  // полный текст ответа ассистента
+        String fullResponse = chatClient
+                .prompt(new Prompt(promptMessages))
+                .tools(knowledgeBase)
+                .call()
+                .content();  // полный текст ответа ассистента
 
         // Обновляем историю диалога: добавляем последнее сообщение пользователя и ассистента
         history.add(userMsg);

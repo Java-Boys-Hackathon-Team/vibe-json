@@ -8,6 +8,6 @@ public class CommonUtils {
         ObjectMapper mapper = new ObjectMapper();
         JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);
         com.fasterxml.jackson.databind.JsonNode jsonSchema = schemaGen.generateJsonSchema(clazz);
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonSchema);
+        return mapper.writeValueAsString(jsonSchema);
     }
 }

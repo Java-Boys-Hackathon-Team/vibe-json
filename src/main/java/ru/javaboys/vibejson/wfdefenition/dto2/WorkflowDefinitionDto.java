@@ -1,6 +1,7 @@
 package ru.javaboys.vibejson.wfdefenition.dto2;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
 @EntityDescription("Определение рабочего процесса")
+@JsonIgnoreProperties(value = { "flowEditorConfig" })
 public class WorkflowDefinitionDto {
 
     @NotBlank
