@@ -17,8 +17,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.llm.impls.kuramshin.dto.RespDto;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +44,10 @@ public class OpenAIService {
     @SneakyThrows
     public void loadSchemaOnce() {
         ClassPathResource resource = new ClassPathResource("workflow-schema.json");
-        byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
-        this.workflowJsonSchema = new String(bytes, StandardCharsets.UTF_8);
+        try (InputStream inputStream = resource.getInputStream()) {
+            byte[] bytes = inputStream.readAllBytes();
+            this.workflowJsonSchema = new String(bytes, StandardCharsets.UTF_8);
+        }
     }
 
     public RespDto processUserMessage(String sessionId, String userMessage, String currentWorkflow) {
