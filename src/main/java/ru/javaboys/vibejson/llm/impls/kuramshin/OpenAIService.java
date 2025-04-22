@@ -11,14 +11,11 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.llm.impls.kuramshin.dto.RespDto;
+import ru.javaboys.vibejson.utils.CommonUtils;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,57 +33,44 @@ public class OpenAIService {
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
                         new SimpleLoggerAdvisor()
-                        )
+                )
                 .build();
     }
 
     @PostConstruct
     @SneakyThrows
     public void loadSchemaOnce() {
-        ClassPathResource resource = new ClassPathResource("workflow-schema.json");
-        try (InputStream inputStream = resource.getInputStream()) {
-            byte[] bytes = inputStream.readAllBytes();
-            this.workflowJsonSchema = new String(bytes, StandardCharsets.UTF_8);
-        }
+        var workflowFromClassPath = CommonUtils.readFileFromClassPath("workflow-schema.json");
+        this.workflowJsonSchema = CommonUtils.minifyJson(workflowFromClassPath);
     }
 
     public RespDto processUserMessage(String sessionId, String userMessage, String currentWorkflow) {
-        // Создаём system-подсказку с инструкциями (в начале диалога или обновляем)
+
         Message systemMsg = createSystemInstruction(currentWorkflow);
         Message userMsg = new UserMessage(userMessage);
-        // Формируем полный prompt: система + история + новое сообщение пользователя
+
         List<Message> promptMessages = new ArrayList<>();
         promptMessages.add(systemMsg);
         promptMessages.add(userMsg);
 
-        // Настраиваем опции GPT: указываем, какие инструменты может вызывать
-        OpenAiChatOptions options = OpenAiChatOptions.builder()
-                .model("gpt-4o")  // указываем модель GPT-4 (или ее deployment name, если Azure OpenAI)
-                .temperature(0.2) // относительно низкая температура для предсказуемости
-                .tools(List.of()) // разрешаем использование наших функций
-                .build();
-
-        // Вызываем модель с подготовленным prompt
         String fullResponse = chatClient
                 .prompt(new Prompt(promptMessages))
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", sessionId)
                         .param("chat_memory_response_size", 100))
                 .tools(knowledgeBase)
                 .call()
-                .content();  // полный текст ответа ассистента
+                .content();
 
-        // Парсим JSON из ответа (если модель вернула JSON). Предположим, что модель всегда включает JSON workflow.
         String workflowJson = extractJsonFromText(fullResponse);
         RespDto result = new RespDto();
         if (workflowJson != null) {
             result.setWorkflowJson(workflowJson);
         }
-        // Ассистент мог вернуть пояснения или вопросы вместе с JSON
+
         result.setAssistantMessage(fullResponse);
         return result;
     }
 
-    // Формирование system-instruction с учетом текущего состояния workflow и справочника
     @SneakyThrows
     private Message createSystemInstruction(String currentWorkflow) {
         String allowedStarterTypes = String.join(", ", knowledgeBase.getAllowedStarterTypes());
@@ -124,12 +108,9 @@ public class OpenAIService {
             """.formatted(currentWorkflow);
         }
 
-        // Предположим, что у вас есть конструктор Message, принимающий строку
         return new SystemMessage(sysText);
     }
 
-
-    // Вспомогательный метод: извлекает JSON из текста ответа
     private String extractJsonFromText(String text) {
         String startMarker = "```json";
         String endMarker = "```";
@@ -137,12 +118,10 @@ public class OpenAIService {
         int startIndex = text.indexOf(startMarker);
         if (startIndex == -1) return null;
 
-        // Находим конец первого блока
         int jsonStart = startIndex + startMarker.length();
         int endIndex = text.indexOf(endMarker, jsonStart);
         if (endIndex == -1) return null;
 
-        // Обрезаем и чистим JSON
         String json = text.substring(jsonStart, endIndex).trim();
         return json;
     }

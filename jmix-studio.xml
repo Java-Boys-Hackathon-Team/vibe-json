@@ -17,4 +17,7 @@
       </entry>
     </moduleSettings>
   </component>
+  <component name="JmixLiquibaseChangesConfig">
+    <exclude-change idName="ai_chat_memory" tagName="dropTable" />
+  </component>
 </project>
