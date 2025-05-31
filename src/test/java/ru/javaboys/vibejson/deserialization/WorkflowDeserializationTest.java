@@ -46,6 +46,16 @@ public class WorkflowDeserializationTest {
         }
     }
 
+    private void tryJsonParse(String schema) {
+        try {
+            JsonNode parsed = objectMapper.readTree(schema);
+            assertNotNull(parsed, "JSON Schema не должна быть null");
+            assertTrue(parsed.isObject(), "JSON Schema должна быть объектом (JSON Object)");
+        } catch (Exception e) {
+            fail("❌ Сгенерированная строка не является валидным JSON:\n" + e.getMessage());
+        }
+    }
+
     @Test
     @DisplayName("wf-1.json должен корректно десериализоваться в WorkflowDefinitionDto")
     public void testWf1Json() {
@@ -94,14 +104,9 @@ public class WorkflowDeserializationTest {
         String schema = CommonUtils.generateJsonSchemaByKjetland(WorkflowDefinitionDto.class);
         log.info("Generated schema:\n{}", schema);
 
-        // Проверяем, что это валидный JSON
-        try {
-            JsonNode parsed = objectMapper.readTree(schema);
-            assertNotNull(parsed, "JSON Schema не должна быть null");
-            assertTrue(parsed.isObject(), "JSON Schema должна быть объектом (JSON Object)");
-        } catch (Exception e) {
-            fail("❌ Сгенерированная строка не является валидным JSON:\n" + e.getMessage());
-        }
+        schema = CommonUtils.minifyJson(schema);
+
+        tryJsonParse(schema);
     }
 
     @Test
@@ -110,14 +115,9 @@ public class WorkflowDeserializationTest {
         String schema = CommonUtils.generateJsonSchemaByJackson(WorkflowDefinitionDto.class);
         log.info("Generated schema:\n{}", schema);
 
-        // Проверяем, что это валидный JSON
-        try {
-            JsonNode parsed = objectMapper.readTree(schema);
-            assertNotNull(parsed, "JSON Schema не должна быть null");
-            assertTrue(parsed.isObject(), "JSON Schema должна быть объектом (JSON Object)");
-        } catch (Exception e) {
-            fail("❌ Сгенерированная строка не является валидным JSON:\n" + e.getMessage());
-        }
+        schema = CommonUtils.minifyJson(schema);
+
+        tryJsonParse(schema);
     }
 
 }

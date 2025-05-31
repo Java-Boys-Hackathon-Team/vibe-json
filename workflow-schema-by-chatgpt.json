@@ -1,0 +1,655 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorkflowDefinition",
+  "type": "object",
+  "required": ["type", "name", "compiled"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["complex", "await_for_message", "rest_call", "db_call", "send_to_rabbitmq", "send_to_kafka", "send_to_s3", "send_to_sap", "xslt_transform", "transform", "inject", "switch", "parallel", "timer"]
+    },
+    "name": { "type": "string" },
+    "version": { "type": "integer" },
+    "description": { "type": "string" },
+    "tenantId": { "type": "string", "default": "default" },
+    "compiled": {
+      "type": "object",
+      "required": ["start", "activities"],
+      "properties": {
+        "start": { "type": "string" },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "transition"],
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "type": "string" },
+              "description": { "type": "string" },
+              "transition": { "type": ["string", "null"] },
+              "workflowCall": {
+                "type": "object",
+                "properties": {
+                  "workflowRef": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" },
+                      "version": { "type": "integer" },
+                      "tenantId": { "type": "string" }
+                    }
+                  },
+                  "workflowDef": {
+                    "type": "object",
+                    "required": ["type", "details"],
+                    "properties": {
+                      "type": { "type": "string" },
+                      "details": {
+                        "type": "object",
+                        "properties": {
+                          "awaitForMessageConfig": {
+                            "type": "object",
+                            "properties": {
+                              "messageName": { "type": "string" }
+                            }
+                          },
+                          "sendToSapConfig": {
+                            "type": "object",
+                            "properties": {
+                              "connectionRef": {
+                                "type": "object",
+                                "properties": {
+                                  "id": { "type": "string" },
+                                  "name": { "type": "string" }
+                                }
+                              },
+                              "connectionDef": {
+                                "type": "object",
+                                "properties": {
+                                  "props": { "type": "object" }
+                                }
+                              },
+                              "idoc": {
+                                "type": "object",
+                                "properties": {
+                                  "xml": { "type": "string" }
+                                }
+                              }
+                            }
+                          },
+                          "restCallConfig": {
+                            "type": "object",
+                            "properties": {
+                              "restCallTemplateDef": {
+                                "type": "object",
+                                "properties": {
+                                  "curl": { "type": "string" },
+                                  "authDef": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": { "type": "string" },
+                                      "oauth2": { "type": "object" }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "args": { "type": "object" },
+                  "retryConfig": {
+                    "type": "object",
+                    "properties": {
+                      "initialInterval": { "type": "string" },
+                      "maxInterval": { "type": "string" },
+                      "maxAttempts": { "type": "integer" },
+                      "backoffCoefficient": { "type": "number" }
+                    }
+                  }
+                }
+              },
+              "injectData": { "type": "object" },
+              "outputFilter": { "type": "string" },
+              "dataConditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "condition": { "type": "string" },
+                    "transition": { "type": "string" }
+                  }
+                }
+              },
+              "defaultCondition": {
+                "type": "object",
+                "properties": {
+                  "transition": { "type": "string" }
+                }
+              },
+              "branches": { "type": "array", "items": { "type": "string" } },
+              "completionType": { "type": "string", "enum": ["anyOf", "allOf"] },
+              "timerDuration": { "type": "string" },
+              "transform": { "type": "object" }
+            }
+          }
+        },
+        "outputTemplate": { "type": "object" }
+      }
+    },
+    "details": {
+      "type": "object",
+      "properties": {
+        "inputValidateSchema": { "type": "object" },
+        "outputValidateSchema": { "type": "object" },
+        "starters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string" },
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "scheduler": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "cron": {
+                    "type": "object",
+                    "properties": {
+                      "dayOfWeek": { "type": "string" },
+                      "dayOfMonth": { "type": "string" },
+                      "month": { "type": "string" },
+                      "hour": { "type": "string" },
+                      "minute": { "type": "string" }
+                    }
+                  },
+                  "startDateTime": { "type": "string" },
+                  "endDateTime": { "type": "string" }
+                }
+              },
+              "rabbitmqConsumer": {
+                "type": "object",
+                "properties": {
+                  "queue": { "type": "string" },
+                  "connectionDef": {
+                    "type": "object",
+                    "properties": {
+                      "userName": { "type": "string" },
+                      "userPass": { "type": "string" },
+                      "addresses": { "type": "array", "items": { "type": "string" } },
+                      "virtualHost": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "flowEditorConfig": { "type": "object" }
+  },
+  "definitions": {
+    "awaitForMessageActivity" : {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "await_for_message" },
+        "details": {
+          "type": "object",
+          "required": ["awaitForMessageConfig"],
+          "properties": {
+            "awaitForMessageConfig": {
+              "type": "object",
+              "required": ["messageName"],
+              "properties": {
+                "messageName": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "restCallActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "rest_call" },
+        "details": {
+          "type": "object",
+          "required": ["restCallConfig"],
+          "properties": {
+            "inputValidateSchema": { "type": "object" },
+            "outputValidateSchema": { "type": "object" },
+            "restCallConfig": {
+              "type": "object",
+              "properties": {
+                "restCallTemplateDef": {
+                  "type": "object",
+                  "properties": {
+                    "method": { "type": "string" },
+                    "url": { "type": "string" },
+                    "bodyTemplate": { "type": "string" },
+                    "headers": { "type": "object" },
+                    "curl": { "type": "string" },
+                    "authDef": {
+                      "type": "object",
+                      "properties": {
+                        "type": { "type": "string" },
+                        "basic": {
+                          "type": "object",
+                          "properties": {
+                            "login": { "type": "string" },
+                            "password": { "type": "string" }
+                          }
+                        },
+                        "oauth2": {
+                          "type": "object",
+                          "properties": {
+                            "issuerLocation": { "type": "string" },
+                            "clientId": { "type": "string" },
+                            "clientSecret": { "type": "string" },
+                            "grantType": { "type": "string" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dbCallActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "db_call" },
+        "details": {
+          "type": "object",
+          "required": ["databaseCallConfig"],
+          "properties": {
+            "databaseCallConfig": {
+              "type": "object",
+              "properties": {
+                "query": { "type": "string" },
+                "parameters": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sendToRabbitmqActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "send_to_rabbitmq" },
+        "details": {
+          "type": "object",
+          "required": ["sendToRabbitmqConfig"],
+          "properties": {
+            "sendToRabbitmqConfig": {
+              "type": "object",
+              "properties": {
+                "queue": { "type": "string" },
+                "message": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sendToKafkaActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "send_to_kafka" },
+        "details": {
+          "type": "object",
+          "required": ["sendToKafkaConfig"],
+          "properties": {
+            "sendToKafkaConfig": {
+              "type": "object",
+              "properties": {
+                "topic": { "type": "string" },
+                "message": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sendToS3Activity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "send_to_s3" },
+        "details": {
+          "type": "object",
+          "required": ["sendToS3Config"],
+          "properties": {
+            "sendToS3Config": {
+              "type": "object",
+              "properties": {
+                "bucket": { "type": "string" },
+                "fileName": { "type": "string" },
+                "content": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sendToSapActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "send_to_sap" },
+        "details": {
+          "type": "object",
+          "required": ["sendToSapConfig"],
+          "properties": {
+            "sendToSapConfig": {
+              "type": "object",
+              "properties": {
+                "idoc": { "type": "string" },
+                "connectionDef": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "xsltTransformActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "xslt_transform" },
+        "details": {
+          "type": "object",
+          "required": ["xsltTransformConfig"],
+          "properties": {
+            "xsltTransformConfig": {
+              "type": "object",
+              "properties": {
+                "xsltTemplate": { "type": "string" },
+                "sourceXml": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "transformActivity": {
+      "type": "object",
+      "required": ["type", "details"],
+      "properties": {
+        "type": { "const": "transform" },
+        "details": {
+          "type": "object",
+          "properties": {
+            "transform": {
+              "type": "object",
+              "properties": {
+                "direction": { "type": "string", "enum": ["json_to_xml", "xml_to_json"] },
+                "source": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "workflowCallActivity": {
+      "type": "object",
+      "required": ["type", "id", "transition", "workflowCall"],
+      "properties": {
+        "type": { "const": "workflow_call" },
+        "id": { "type": "string" },
+        "transition": { "type": ["string", "null"] },
+        "workflowCall": {
+          "type": "object",
+          "required": ["workflowDef"],
+          "properties": {
+            "workflowDef": {
+              "oneOf": [
+                { "$ref": "#/definitions/awaitForMessageActivity" },
+                { "$ref": "#/definitions/restCallActivity" },
+                { "$ref": "#/definitions/dbCallActivity" },
+                { "$ref": "#/definitions/sendToRabbitmqActivity" },
+                { "$ref": "#/definitions/sendToKafkaActivity" },
+                { "$ref": "#/definitions/sendToS3Activity" },
+                { "$ref": "#/definitions/sendToSapActivity" },
+                { "$ref": "#/definitions/xsltTransformActivity" },
+                { "$ref": "#/definitions/transformActivity" }
+              ]
+            }
+          }
+        }
+      }
+    },
+
+    "restCallStarter": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "rest_call" }
+      }
+    },
+    "rabbitmqConsumerStarter": {
+      "type": "object",
+      "required": ["type", "name", "rabbitmqConsumer"],
+      "properties": {
+        "type": { "const": "rabbitmq_consumer" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "rabbitmqConsumer": {
+          "type": "object",
+          "required": ["queue", "connectionDef"],
+          "properties": {
+            "queue": { "type": "string" },
+            "connectionDef": {
+              "type": "object",
+              "required": ["userName", "userPass", "addresses", "virtualHost"],
+              "properties": {
+                "userName": { "type": "string" },
+                "userPass": { "type": "string" },
+                "addresses": { "type": "array", "items": { "type": "string" } },
+                "virtualHost": { "type": "string" }
+              }
+            },
+            "payloadValidateSchema": { "type": "object" },
+            "outputTemplate": { "type": "object" }
+          }
+        }
+      }
+    },
+    "kafkaConsumerStarter": {
+      "type": "object",
+      "required": ["type", "name", "kafkaConsumer"],
+      "properties": {
+        "type": { "const": "kafka_consumer" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "kafkaConsumer": {
+          "type": "object",
+          "required": ["topic", "connectionDef"],
+          "properties": {
+            "topic": { "type": "string" },
+            "connectionDef": {
+              "type": "object",
+              "required": ["bootstrapServers", "authDef"],
+              "properties": {
+                "bootstrapServers": { "type": "string" },
+                "authDef": {
+                  "type": "object",
+                  "required": ["type"],
+                  "properties": {
+                    "type": { "type": "string", "enum": ["SASL", "TLS"] },
+                    "sasl": {
+                      "type": "object",
+                      "properties": {
+                        "protocol": { "type": "string" },
+                        "mechanism": { "type": "string" },
+                        "username": { "type": "string" },
+                        "password": { "type": "string" },
+                        "sslDef": {
+                          "type": "object",
+                          "properties": {
+                            "trustStoreType": { "type": "string" },
+                            "trustStoreCertificates": { "type": "string" }
+                          }
+                        }
+                      }
+                    },
+                    "tls": {
+                      "type": "object",
+                      "properties": {
+                        "keyStoreCertificates": { "type": "string" },
+                        "keyStoreKey": { "type": "string" },
+                        "trustStoreCertificates": { "type": "string" },
+                        "trustStoreType": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "payloadValidateSchema": { "type": "object" },
+            "keyValidateSchema": { "type": "object" },
+            "headersValidateSchema": { "type": "object" },
+            "outputTemplate": { "type": "object" }
+          }
+        }
+      }
+    },
+    "sapInboundStarter": {
+      "type": "object",
+      "required": ["type", "sapInbound"],
+      "properties": {
+        "type": { "const": "sap_inbound" },
+        "sapInbound": {
+          "type": "object",
+          "required": ["inboundDef"],
+          "properties": {
+            "inboundDef": {
+              "type": "object",
+              "required": ["name", "connectionDef", "props"],
+              "properties": {
+                "name": { "type": "string" },
+                "connectionDef": {
+                  "type": "object",
+                  "required": ["props"],
+                  "properties": {
+                    "props": {
+                      "type": "object",
+                      "properties": {
+                        "jco.client.lang": { "type": "string" },
+                        "jco.client.passwd": { "type": "string" },
+                        "jco.client.user": { "type": "string" },
+                        "jco.client.sysnr": { "type": "integer" },
+                        "jco.destination.pool_capacity": { "type": "integer" },
+                        "jco.destination.peak_limit": { "type": "integer" },
+                        "jco.client.client": { "type": "integer" },
+                        "jco.client.ashost": { "type": "string" }
+                      }
+                    }
+                  }
+                },
+                "props": {
+                  "type": "object",
+                  "properties": {
+                    "jco.server.gwhost": { "type": "string" },
+                    "jco.server.progid": { "type": "string" },
+                    "jco.server.gwserv": { "type": "string" },
+                    "jco.server.connection_count": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schedulerStarter": {
+      "type": "object",
+      "required": ["type", "name", "scheduler"],
+      "properties": {
+        "type": { "const": "scheduler" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "scheduler": {
+          "type": "object",
+          "required": ["type", "cron", "startDateTime"],
+          "properties": {
+            "type": { "const": "cron" },
+            "cron": {
+              "type": "object",
+              "properties": {
+                "dayOfWeek": { "type": "string" },
+                "dayOfMonth": { "type": "string" },
+                "month": { "type": "string" },
+                "hour": { "type": "string" },
+                "minute": { "type": "string" }
+              }
+            },
+            "startDateTime": { "type": "string", "format": "date-time" },
+            "endDateTime": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
+    "mailConsumerStarter": {
+      "type": "object",
+      "required": ["type", "name", "mailConsumer"],
+      "properties": {
+        "type": { "const": "mail_consumer" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "mailConsumer": {
+          "type": "object",
+          "required": ["connectionDef", "mailFilter"],
+          "properties": {
+            "connectionDef": {
+              "type": "object",
+              "required": ["protocol", "host", "port", "mailAuth"],
+              "properties": {
+                "protocol": { "type": "string", "enum": ["imap"] },
+                "host": { "type": "string" },
+                "port": { "type": "integer" },
+                "mailAuth": {
+                  "type": "object",
+                  "required": ["username", "password"],
+                  "properties": {
+                    "username": { "type": "string" },
+                    "password": { "type": "string" }
+                  }
+                }
+              }
+            },
+            "mailFilter": {
+              "type": "object",
+              "properties": {
+                "senders": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "subjects": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "startMailDateTime": { "type": "string", "format": "date-time" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
