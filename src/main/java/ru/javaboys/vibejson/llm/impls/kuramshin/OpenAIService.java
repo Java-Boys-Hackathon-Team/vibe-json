@@ -11,7 +11,6 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -58,13 +57,6 @@ public class OpenAIService {
         List<Message> promptMessages = new ArrayList<>();
         promptMessages.add(systemMsg);
         promptMessages.add(userMsg);
-
-        // Настраиваем опции GPT: указываем, какие инструменты может вызывать
-        OpenAiChatOptions options = OpenAiChatOptions.builder()
-                .model("gpt-4o")  // указываем модель GPT-4 (или ее deployment name, если Azure OpenAI)
-                .temperature(0.2) // относительно низкая температура для предсказуемости
-                .tools(List.of()) // разрешаем использование наших функций
-                .build();
 
         // Вызываем модель с подготовленным prompt
         String fullResponse = chatClient
