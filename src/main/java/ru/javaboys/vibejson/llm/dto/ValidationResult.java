@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.llm.impls.kuramshin.dto;
+package ru.javaboys.vibejson.llm.dto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.llm.impls.kuramshin;
+package ru.javaboys.vibejson.llm;
 
 import lombok.Getter;
 

@@ -1,10 +1,10 @@
-package ru.javaboys.vibejson.llm.impls.kuramshin;
+package ru.javaboys.vibejson.llm;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.entity.Conversation;
-import ru.javaboys.vibejson.llm.common.LLMResponseDto;
-import ru.javaboys.vibejson.llm.common.LLMService;
+import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
+import ru.javaboys.vibejson.llm.dto.RespDto;
 
 @Service("Algo1")
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class LLMServiceChatGPT implements LLMService {
 
         var currentWorkflow = !messages.isEmpty() ? messages.get(messages.size() - 1).getJsonDslSchema().getSchemaText() : null;
 
-        var resp = openAIService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
+        RespDto resp = openAIService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
 
         return LLMResponseDto.builder()
                 .workflow(resp.getWorkflowJson())

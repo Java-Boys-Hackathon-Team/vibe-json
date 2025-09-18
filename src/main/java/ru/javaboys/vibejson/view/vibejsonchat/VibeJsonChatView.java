@@ -42,8 +42,8 @@ import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.JsonDslSchema;
 import ru.javaboys.vibejson.entity.SenderType;
-import ru.javaboys.vibejson.llm.common.LLMResponseDto;
-import ru.javaboys.vibejson.llm.common.LLMService;
+import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
+import ru.javaboys.vibejson.llm.LLMService;
 import ru.javaboys.vibejson.view.main.MainView;
 
 import java.time.format.DateTimeFormatter;

@@ -1,9 +1,9 @@
-package ru.javaboys.vibejson.llm.impls.kuramshin;
+package ru.javaboys.vibejson.llm;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
-import ru.javaboys.vibejson.llm.impls.kuramshin.dto.ValidationResult;
+import ru.javaboys.vibejson.llm.dto.ValidationResult;
 import ru.javaboys.vibejson.wfdefenition.ActivityDto;
 import ru.javaboys.vibejson.wfdefenition.StarterDto;
 import ru.javaboys.vibejson.wfdefenition.root.WorkflowDefinitionDto;

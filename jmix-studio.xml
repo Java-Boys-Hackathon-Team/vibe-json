@@ -8,7 +8,12 @@
             <map>
               <entry key="main">
                 <value>
-                  <DataStoreSettingsV2 />
+                  <DataStoreSettingsV2>
+                    <option name="generateDdlType" value="CREATE_AND_UPDATE" />
+                    <option name="supportedTypes">
+                      <option value="postgres" />
+                    </option>
+                  </DataStoreSettingsV2>
                 </value>
               </entry>
             </map>
@@ -16,5 +21,8 @@
         </ModuleSettings>
       </entry>
     </moduleSettings>
+  </component>
+  <component name="JmixLiquibaseChangesConfig">
+    <exclude-change idName="ai_chat_memory" tagName="dropTable" />
   </component>
 </project>

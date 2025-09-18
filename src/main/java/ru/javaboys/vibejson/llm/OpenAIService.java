@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.llm.impls.kuramshin;
+package ru.javaboys.vibejson.llm;
 
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
@@ -14,7 +14,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import ru.javaboys.vibejson.llm.impls.kuramshin.dto.RespDto;
+import ru.javaboys.vibejson.llm.dto.RespDto;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
