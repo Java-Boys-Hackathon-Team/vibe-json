@@ -155,8 +155,8 @@ public class VibeJsonChatView extends StandardView {
         // default
         String serviceName = Optional.ofNullable(currentConversation)
                 .map(Conversation::getService)
-                .orElse("Algo1");
-        llmComboBox.setValue(llmServiceMap.get("Algo1"));
+                .orElse("SpringAI-OpenAI");
+        llmComboBox.setValue(llmServiceMap.get("SpringAI-OpenAI"));
 
         imgSlider.setVisible(false);
 
@@ -214,7 +214,7 @@ public class VibeJsonChatView extends StandardView {
     public void onConversationsDataGridItemClick(final ItemClickEvent<Conversation> event) {
         // текущая выбранная беседа
         currentConversation = event.getItem();
-        llmComboBox.setValue(llmServiceMap.get("Algo1"));
+        llmComboBox.setValue(llmServiceMap.get("SpringAI-OpenAI"));
 
         //  Когда conversation не выбран: очищаем чат и JSON‑панель и выходим
         if (currentConversation == null) {

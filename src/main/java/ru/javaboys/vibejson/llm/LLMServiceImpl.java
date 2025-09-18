@@ -6,9 +6,9 @@ import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.llm.dto.ChatMessageAndWorkflow;
 import ru.javaboys.vibejson.llm.dto.RespDto;
 
-@Service("Algo1")
+@Service("SpringAI-OpenAI")
 @RequiredArgsConstructor
-public class LLMServiceChatGPT implements LLMService {
+public class LLMServiceImpl implements LLMService {
 
     private final AiAgentService aiAgentService;
 
@@ -29,6 +29,6 @@ public class LLMServiceChatGPT implements LLMService {
 
     @Override
     public String getModelCode() {
-        return "Algo1";
+        return "SpringAI-OpenAI";
     }
 }
