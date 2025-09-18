@@ -3,6 +3,7 @@ package ru.javaboys.vibejson.llm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
+import ru.javaboys.vibejson.llm.dto.ActivityType;
 import ru.javaboys.vibejson.llm.dto.ValidationResult;
 import ru.javaboys.vibejson.wfdefenition.ActivityDto;
 import ru.javaboys.vibejson.wfdefenition.StarterDto;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class WorkflowKnowledgeBase {
+public class WorkflowTools {
 
     /** Получить допустимые типы активити (строковые значения) */
     @Tool(description = "Получить допустимые типы activities (активити)")
@@ -26,14 +27,6 @@ public class WorkflowKnowledgeBase {
         return Arrays.stream(ActivityType.values())
                 .map(ActivityType::getType)
                 .collect(Collectors.toList());
-    }
-
-    /** Получить справочное описание типов активити (для вывода в prompt GPT) */
-    public String describeAllowedActivityTypes() {
-        return Arrays.stream(ActivityType.values())
-                .map(t -> "- `" + t.getType() + "`" +
-                        (t.getRequiredParams().isEmpty() ? "" : " (required: " + String.join(", ", t.getRequiredParams()) + ")"))
-                .collect(Collectors.joining("\n"));
     }
 
     /** Получить допустимые типы стартеров (например, KafkaConsumer, Scheduler и т.п.) */

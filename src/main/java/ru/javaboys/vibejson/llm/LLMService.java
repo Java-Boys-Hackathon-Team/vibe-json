@@ -1,11 +1,11 @@
 package ru.javaboys.vibejson.llm;
 
 import ru.javaboys.vibejson.entity.Conversation;
-import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
+import ru.javaboys.vibejson.llm.dto.ChatMessageAndWorkflow;
 
 public interface LLMService {
      // prompt - это одно любое сообщение от пользователя
-     LLMResponseDto userPromptToWorkflow(Conversation conversation, String prompt);
+     ChatMessageAndWorkflow userPromptToWorkflow(Conversation conversation, String prompt);
 
      String getModelCode();
 }

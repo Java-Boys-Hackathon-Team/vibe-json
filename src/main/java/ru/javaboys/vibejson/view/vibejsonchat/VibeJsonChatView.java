@@ -42,7 +42,7 @@ import ru.javaboys.vibejson.entity.ChatMessage;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.entity.JsonDslSchema;
 import ru.javaboys.vibejson.entity.SenderType;
-import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
+import ru.javaboys.vibejson.llm.dto.ChatMessageAndWorkflow;
 import ru.javaboys.vibejson.llm.LLMService;
 import ru.javaboys.vibejson.view.main.MainView;
 
@@ -430,7 +430,7 @@ public class VibeJsonChatView extends StandardView {
         return message;
     }
 
-    private void processLlmResult(LLMResponseDto dto, Throwable exception) {
+    private void processLlmResult(ChatMessageAndWorkflow dto, Throwable exception) {
         sendButton.setEnabled(true);
         promptInput.setEnabled(true);
         imgSlider.setVisible(false);
@@ -485,7 +485,7 @@ public class VibeJsonChatView extends StandardView {
                         () -> {
                             long startedAt = System.currentTimeMillis();
                             log.info("---> Prompt process stated; conversationId = {}", conversation.getId());
-                            LLMResponseDto dto = systemAuthenticator.withUser(username,
+                            ChatMessageAndWorkflow dto = systemAuthenticator.withUser(username,
                                     () -> llmService.userPromptToWorkflow(conversation, prompt));
                             log.info("---> Prompt process finished(took {} ms); conversationId = {}",
                                     System.currentTimeMillis() - startedAt,

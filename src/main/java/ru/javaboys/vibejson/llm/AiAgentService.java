@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OpenAIService {
+public class AiAgentService {
 
     private final ChatClient chatClient;
-    private final WorkflowKnowledgeBase knowledgeBase;
+    private final WorkflowTools workflowTools;
     private String workflowJsonSchema;
 
-    public OpenAIService(ChatClient.Builder chatClientBuilder, JdbcTemplate jdbcTemplate, WorkflowKnowledgeBase knowledgeBase) {
-        this.knowledgeBase = knowledgeBase;
+    public AiAgentService(ChatClient.Builder chatClientBuilder, JdbcTemplate jdbcTemplate, WorkflowTools workflowTools) {
+        this.workflowTools = workflowTools;
         var chatMemory = JdbcChatMemory.create(JdbcChatMemoryConfig.builder().jdbcTemplate(jdbcTemplate).build());
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
@@ -63,7 +63,7 @@ public class OpenAIService {
                 .prompt(new Prompt(promptMessages))
                 .advisors(advisor -> advisor.param("chat_memory_conversation_id", sessionId)
                         .param("chat_memory_response_size", 100))
-                .tools(knowledgeBase)
+                .tools(workflowTools)
                 .call()
                 .content();  // полный текст ответа ассистента
 
@@ -81,8 +81,8 @@ public class OpenAIService {
     // Формирование system-instruction с учетом текущего состояния workflow и справочника
     @SneakyThrows
     private Message createSystemInstruction(String currentWorkflow) {
-        String allowedStarterTypes = String.join(", ", knowledgeBase.getAllowedStarterTypes());
-        String allowedActivityTypes = String.join(", ", knowledgeBase.getAllowedActivityTypes());
+        String allowedStarterTypes = String.join(", ", workflowTools.getAllowedStarterTypes());
+        String allowedActivityTypes = String.join(", ", workflowTools.getAllowedActivityTypes());
 
         String sysText = """
         Ты – AI помощник для построения интеграционных workflow (интеграционных бизнес-процессов).

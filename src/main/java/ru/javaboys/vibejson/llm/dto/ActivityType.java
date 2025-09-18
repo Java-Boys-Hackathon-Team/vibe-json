@@ -1,4 +1,4 @@
-package ru.javaboys.vibejson.llm;
+package ru.javaboys.vibejson.llm.dto;
 
 import lombok.Getter;
 
