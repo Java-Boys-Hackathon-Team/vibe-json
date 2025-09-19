@@ -86,7 +86,7 @@ public class AiAgentService {
 
         if (currentWorkflow != null && currentWorkflow.isBlank()) {
             systemText += """
-                    Текущий сформированный ранее Workflow: ```
+                    Текущий, сформированный ранее, Workflow: ```
                     {currentWorkflow}
                     ```
                     На основе текущего workflow выполни запрос пользователя.
