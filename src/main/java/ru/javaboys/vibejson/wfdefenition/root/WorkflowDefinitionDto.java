@@ -2,6 +2,7 @@ package ru.javaboys.vibejson.wfdefenition.root;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,12 +13,12 @@ import ru.javaboys.vibejson.wfdefenition.EntityDescription;
 
 @Data
 @EntityDescription("Определение рабочего процесса")
-@JsonIgnoreProperties(value = { "flowEditorConfig" })
+@JsonIgnoreProperties(value = {"flowEditorConfig"})
 public class WorkflowDefinitionDto {
 
     @NotBlank
     @Size(max = 255)
-    private String type = "complex"; // чаще всего "complex"
+    private String type = "complex";
 
     @NotBlank
     @Size(max = 255)
@@ -26,13 +27,14 @@ public class WorkflowDefinitionDto {
     @Size(max = 4000)
     private String description;
 
-    private Integer version = 1; // по умолчанию
+    private Integer version = 1;
 
-    private String tenantId = "default"; // по умолчанию
+    private String tenantId = "default";
 
     @NotNull
+    @Valid
     private DetailsDto details;
 
+    @Valid
     private CompiledDto compiled;
-
 }

@@ -1,139 +1,79 @@
 package ru.javaboys.vibejson.llm;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
-import ru.javaboys.vibejson.llm.dto.ActivityType;
 import ru.javaboys.vibejson.llm.dto.ValidationResult;
-import ru.javaboys.vibejson.wfdefenition.ActivityDto;
-import ru.javaboys.vibejson.wfdefenition.StarterDto;
 import ru.javaboys.vibejson.wfdefenition.root.WorkflowDefinitionDto;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class WorkflowTools {
 
-    /** Получить допустимые типы активити (строковые значения) */
-    @Tool(description = "Получить допустимые типы activities (активити)")
-    public List<String> getAllowedActivityTypes() {
-        log.info("Call Tool getAllowedActivityTypes");
-        return Arrays.stream(ActivityType.values())
-                .map(ActivityType::getType)
-                .collect(Collectors.toList());
-    }
-
-    /** Получить допустимые типы стартеров (например, KafkaConsumer, Scheduler и т.п.) */
-    @Tool(description = "Получить допустимые типы starters (стартеров)")
-    public List<String> getAllowedStarterTypes() {
-        log.info("Call Tool getAllowedStarterTypes");
-        return Arrays.stream(StarterDto.class.getDeclaredFields())
-                .filter(f -> f.getType().getSimpleName().endsWith("Dto"))
-                .map(Field::getName)
-                .map(this::toTypeName)
-                .collect(Collectors.toList());
-    }
-
-    /** Валидация workflow: типы и обязательные параметры */
     @Tool(description = "Метод позволяет выполнить валидацию workflow")
-    public ValidationResult validateWorkflow(WorkflowDefinitionDto workflow) {
-        log.info("Call Tool validateWorkflow with params {}", workflow);
+    public ValidationResult validateWorkflow(
+             @ToolParam(description = "Текущий сформированный интеграционный бизнес-процесс") WorkflowDefinitionDto workflow
+    ) {
         ValidationResult result = new ValidationResult();
+        List<String> errors = new ArrayList<>();
 
-        if (workflow.getDetails() == null) {
-            result.addError("Missing workflow 'details' section.");
+        if (workflow == null) {
+            result.setIsValid(false);
+            errors.add("workflow не может быть null");
+            result.setErrors(errors);
+            logValidationErrors(errors);
             return result;
         }
 
-        // Стартеры
-        List<StarterDto> starters = workflow.getDetails().getStarters();
-        if (starters == null || starters.isEmpty()) {
-            result.addError("No starters defined.");
-        } else {
-            for (StarterDto starter : starters) {
-                validateStarter(starter, result);
-            }
-        }
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<WorkflowDefinitionDto>> violations = validator.validate(workflow);
 
-        // Активности
-        if (workflow.getCompiled() == null || workflow.getCompiled().getActivities() == null) {
-            result.addError("Workflow 'compiled.activities' section is missing.");
+        if (!violations.isEmpty()) {
+            errors = violations.stream()
+                    .map(v -> formatViolation(v))
+                    .collect(Collectors.toList());
+            result.setIsValid(false);
+            result.setErrors(errors);
+            logValidationErrors(errors);
         } else {
-            for (ActivityDto activity : workflow.getCompiled().getActivities()) {
-                validateActivity(activity, result);
-            }
+            result.setIsValid(true);
+            result.setErrors(List.of());
         }
 
         return result;
     }
 
-    /** Проверка стартеров */
-    private void validateStarter(StarterDto starter, ValidationResult result) {
-        String type = starter.getType();
-        if (type == null || type.isBlank()) {
-            result.addError("Starter with missing 'type'.");
-            return;
-        }
-
-        if (!getAllowedStarterTypes().contains(type)) {
-            result.addError("Unknown starter type: '" + type + "'");
-            return;
-        }
-
-        // Проверка, что соответствующий DTO внутри не пустой
+    private String formatViolation(ConstraintViolation<?> v) {
+        String path = v.getPropertyPath() == null ? "" : v.getPropertyPath().toString();
+        Object invalid = v.getInvalidValue();
+        String invalidStr;
         try {
-            String fieldName = decapitalize(type); // KafkaConsumer -> kafkaConsumer
-            Field field = StarterDto.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            Object fieldValue = field.get(starter);
-            if (fieldValue == null) {
-                result.addError("Starter type '" + type + "' is defined but missing inner DTO '" + fieldName + "'.");
+            invalidStr = invalid == null ? "null" : String.valueOf(invalid);
+            if (invalidStr.length() > 500) {
+                invalidStr = invalidStr.substring(0, 500) + "...";
             }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            result.addError("Starter type '" + type + "' has no matching DTO field.");
+        } catch (Exception e) {
+            invalidStr = "<unprintable>";
         }
+        String message = v.getMessage();
+        return String.format("%s: %s (значение: %s)", path, message, invalidStr);
     }
 
-    /** Проверка активити */
-    private void validateActivity(ActivityDto activity, ValidationResult result) {
-        String type = activity.getType();
-        String id = activity.getId() != null ? activity.getId() : "[no id]";
-
-        if (type == null || type.isBlank()) {
-            result.addError("Activity '" + id + "' has missing type.");
-            return;
-        }
-
-        Optional<ActivityType> activityTypeOpt = ActivityType.fromType(type);
-        if (activityTypeOpt.isEmpty()) {
-            result.addError("Unknown activity type: '" + type + "' in activity '" + id + "'");
-            return;
-        }
-
-        Map<String, Object> injectData = activity.getInjectData();
-        for (String param : activityTypeOpt.get().getRequiredParams()) {
-            if (injectData == null || !injectData.containsKey(param)) {
-                result.addError("Activity '" + id + "' (" + type + ") missing required param: '" + param + "'");
-            }
-        }
-    }
-
-    // Преобразование camelCase -> PascalCase
-    private String toTypeName(String fieldName) {
-        if (fieldName == null || fieldName.isEmpty()) return fieldName;
-        return fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-    }
-
-    // Преобразование PascalCase -> camelCase
-    private String decapitalize(String input) {
-        if (input == null || input.isEmpty()) return input;
-        return input.substring(0, 1).toLowerCase() + input.substring(1);
+    private void logValidationErrors(List<String> errors) {
+        if (errors == null || errors.isEmpty()) return;
+        String block = "\n================= Ошибки валидации Workflow =================\n"
+                + errors.stream().map(e -> " - " + e).collect(Collectors.joining("\n"))
+                + "\n=============================================================";
+        log.error(block);
     }
 }
 

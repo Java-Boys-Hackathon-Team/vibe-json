@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.javaboys.vibejson.entity.Conversation;
 import ru.javaboys.vibejson.llm.dto.ChatMessageAndWorkflow;
-import ru.javaboys.vibejson.llm.dto.RespDto;
+import ru.javaboys.vibejson.llm.dto.LLMResponseDto;
+import ru.javaboys.vibejson.utils.CommonUtils;
 
 @Service("SpringAI-OpenAI")
 @RequiredArgsConstructor
@@ -19,11 +20,11 @@ public class LLMServiceImpl implements LLMService {
 
         var currentWorkflow = !messages.isEmpty() ? messages.get(messages.size() - 1).getJsonDslSchema().getSchemaText() : null;
 
-        RespDto resp = aiAgentService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
+        LLMResponseDto resp = aiAgentService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
 
         return ChatMessageAndWorkflow.builder()
-                .workflow(resp.getWorkflowJson())
-                .LLMChatMsg(resp.getAssistantMessage())
+                .workflow(CommonUtils.toJson(resp.getWorkflow()))
+                .LLMChatMsg(resp.getChatMessageForUser())
                 .build();
     }
 
