@@ -7,21 +7,6 @@
 
 **ЛИБО ВЫ МОЖЕТЕ ПОСМОТРЕТЬ pdf В КОРНЕ РЕПОЗИТОРИЯ!**
 
-## 📬 Связаться с разработчиками
-
-Если у вас есть вопросы или предложения — свяжитесь с нашей командой:
-
-- **Рустам Курамшин** — [https://t.me/KuramshinRustam](https://t.me/KuramshinRustam) | 📞 +7 (952) 584-34-99
-- **Рустам Гулямов** — [https://t.me/gulyamovrustam](https://t.me/gulyamovrustam) | 📞 +7 (912) 321-88-19
-- **Александр Янчий** — [https://t.me/AlexYanchiy_ru](https://t.me/AlexYanchiy_ru) | 📞 +7 (978) 127-77-34
-- **Рустам Зулкарниев** — [https://t.me/WerderR](https://t.me/WerderR) | 📞 +7 (919) 883-84-60
-
-## 🧪 Попробовать прямо сейчас
-
-👉 [https://vibe-json.javaboys.ru/login](https://vibe-json.javaboys.ru/login)  
-**Логин:** `admin`  
-**Пароль:** `javaboys`
-
 ## 🚀 Возможности
 
 - 📄 Генерация JSON-схем на основе описания бизнес-процесса
