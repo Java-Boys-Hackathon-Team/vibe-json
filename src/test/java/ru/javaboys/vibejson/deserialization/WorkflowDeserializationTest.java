@@ -1,21 +1,17 @@
 package ru.javaboys.vibejson.deserialization;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.javaboys.vibejson.utils.CommonUtils;
 import ru.javaboys.vibejson.wfdefenition.root.WorkflowDefinitionDto;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
@@ -87,37 +83,4 @@ public class WorkflowDeserializationTest {
         File file = new File("src/test/resources/workflows/from-model.json");
         assertJsonMatchesDto(file, WorkflowDefinitionDto.class);
     }
-
-    @Test
-    @DisplayName("Создается валидная JSON Schema By Kjetland для WorkflowDefinitionDto")
-    public void testCreateJSONSchemaByKjetland() throws Exception {
-        String schema = CommonUtils.generateJsonSchemaByKjetland(WorkflowDefinitionDto.class);
-        log.info("Generated schema:\n{}", schema);
-
-        // Проверяем, что это валидный JSON
-        try {
-            JsonNode parsed = objectMapper.readTree(schema);
-            assertNotNull(parsed, "JSON Schema не должна быть null");
-            assertTrue(parsed.isObject(), "JSON Schema должна быть объектом (JSON Object)");
-        } catch (Exception e) {
-            fail("❌ Сгенерированная строка не является валидным JSON:\n" + e.getMessage());
-        }
-    }
-
-    @Test
-    @DisplayName("Создается валидная JSON Schema By Jackson для WorkflowDefinitionDto")
-    public void testCreateJSONSchemaByJackson() throws Exception {
-        String schema = CommonUtils.generateJsonSchemaByJackson(WorkflowDefinitionDto.class);
-        log.info("Generated schema:\n{}", schema);
-
-        // Проверяем, что это валидный JSON
-        try {
-            JsonNode parsed = objectMapper.readTree(schema);
-            assertNotNull(parsed, "JSON Schema не должна быть null");
-            assertTrue(parsed.isObject(), "JSON Schema должна быть объектом (JSON Object)");
-        } catch (Exception e) {
-            fail("❌ Сгенерированная строка не является валидным JSON:\n" + e.getMessage());
-        }
-    }
-
 }
