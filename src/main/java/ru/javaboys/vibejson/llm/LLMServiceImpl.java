@@ -18,7 +18,12 @@ public class LLMServiceImpl implements LLMService {
 
         var messages = conversation.getMessages();
 
-        var currentWorkflow = !messages.isEmpty() ? messages.get(messages.size() - 1).getJsonDslSchema().getSchemaText() : null;
+        var jsonDslSchema = messages.get(messages.size() - 1).getJsonDslSchema();
+
+        String currentWorkflow = null;
+        if (!messages.isEmpty() && jsonDslSchema != null) {
+            currentWorkflow = jsonDslSchema.getSchemaText();
+        }
 
         LLMResponseDto resp = aiAgentService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
 
