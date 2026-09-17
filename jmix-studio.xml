@@ -25,4 +25,11 @@
   <component name="JmixLiquibaseChangesConfig">
     <exclude-change idName="ai_chat_memory" tagName="dropTable" />
   </component>
+  <component name="VersionUpdateSettings">
+    <option name="ignoredVersions">
+      <set>
+        <option value="2.6.1" />
+      </set>
+    </option>
+  </component>
 </project>
