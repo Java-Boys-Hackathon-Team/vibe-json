@@ -18,11 +18,15 @@ public class LLMServiceImpl implements LLMService {
 
         var messages = conversation.getMessages();
 
-        var jsonDslSchema = messages.get(messages.size() - 1).getJsonDslSchema();
-
+        // Последнее сообщение беседы нужно ради уже построенной схемы, но в новой
+        // беседе сообщений ещё нет: обращение по индексу size() - 1 до проверки на
+        // пустоту роняло первый же запрос в каждом новом чате.
         String currentWorkflow = null;
-        if (!messages.isEmpty() && jsonDslSchema != null) {
-            currentWorkflow = jsonDslSchema.getSchemaText();
+        if (messages != null && !messages.isEmpty()) {
+            var jsonDslSchema = messages.get(messages.size() - 1).getJsonDslSchema();
+            if (jsonDslSchema != null) {
+                currentWorkflow = jsonDslSchema.getSchemaText();
+            }
         }
 
         LLMResponseDto resp = aiAgentService.processUserMessage(conversation.getId().toString(), prompt, currentWorkflow);
