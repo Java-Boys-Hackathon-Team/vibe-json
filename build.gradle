@@ -55,6 +55,10 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3'
 
+    // Ответы ассистента в чате приходят в Markdown.
+    implementation 'org.commonmark:commonmark:0.24.0'
+    implementation 'org.commonmark:commonmark-ext-gfm-tables:0.24.0'
+
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory-jdbc'

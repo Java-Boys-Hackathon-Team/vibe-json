@@ -24,13 +24,17 @@
             <pagination component="pagination"/>
         </urlQueryParameters>
     </facets>
-    <layout>
+    <layout classNames="vj-crud-view">
+        <div id="pageHeader" classNames="vj-page-header">
+            <h2 id="pageTitle" text="msg://UserListView.title" classNames="vj-page-title"/>
+            <span id="pageSubtitle" text="msg://UserListView.subtitle" classNames="vj-page-subtitle"/>
+        </div>
         <genericFilter id="genericFilter"
                        dataLoader="usersDl">
             <properties include=".*"/>
         </genericFilter>
         <hbox id="buttonsPanel" classNames="buttons-panel">
-            <button id="createButton" action="usersDataGrid.createAction"/>
+            <button id="createButton" action="usersDataGrid.createAction" themeNames="primary"/>
             <button id="editButton" action="usersDataGrid.editAction"/>
             <button id="removeButton" action="usersDataGrid.removeAction"/>
             <button id="showRoleAssignmentsButton" action="usersDataGrid.showRoleAssignmentsAction"/>

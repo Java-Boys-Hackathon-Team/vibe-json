@@ -3,6 +3,7 @@ package ru.javaboys.vibejson;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.server.AppShellSettings;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
@@ -22,7 +23,7 @@ import javax.sql.DataSource;
 
 @Push
 @Theme(value = "vibe-json")
-@PWA(name = "Vibe Json", shortName = "Vibe Json")
+@PWA(name = "Vibe JSON", shortName = "Vibe JSON")
 @JsModule("./src/theme/color-scheme-switching-support.js")
 @SpringBootApplication
 public class VibeJsonApplication implements AppShellConfigurator {
@@ -32,6 +33,17 @@ public class VibeJsonApplication implements AppShellConfigurator {
 
     public static void main(String[] args) {
         SpringApplication.run(VibeJsonApplication.class, args);
+    }
+
+    @Override
+    public void configurePage(AppShellSettings settings) {
+        settings.addFavIcon("icon", "icons/logo.svg", "any");
+        settings.addMetaTag("theme-color", "#6366f1");
+        // Шрифты интерфейса. Если Google Fonts недоступен, тема откатывается на
+        // системные шрифты - они перечислены в --lumo-font-family.
+        settings.addLink("preconnect", "https://fonts.gstatic.com");
+        settings.addLink("stylesheet", "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800"
+                + "&family=JetBrains+Mono:wght@400;500&display=swap");
     }
 
     @Bean

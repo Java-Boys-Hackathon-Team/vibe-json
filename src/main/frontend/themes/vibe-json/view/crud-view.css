@@ -1,0 +1,68 @@
+/* Стандартные экраны списков и редактирования (пользователи, конфигурации). */
+
+.vj-crud-view {
+  box-sizing: border-box;
+  padding: 1.25rem 1.5rem;
+  gap: .9rem;
+}
+
+.vj-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.vj-page-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--vj-text);
+}
+
+.vj-page-subtitle {
+  font-size: .86rem;
+  color: var(--vj-text-3);
+}
+
+.vj-crud-view jmix-generic-filter,
+.vj-crud-view .jmix-generic-filter {
+  box-sizing: border-box;
+  width: 100%;
+  padding: .5rem .75rem;
+  border-radius: var(--vj-radius-m);
+  background: var(--vj-surface);
+  border: 1px solid var(--vj-border);
+}
+
+.vj-crud-view vaadin-grid {
+  --lumo-size-m: 2.6rem;
+}
+
+.vj-crud-view vaadin-grid::part(header-cell) {
+  background: var(--vj-surface-2);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--vj-text-2);
+}
+
+.vj-crud-view vaadin-grid::part(row):hover {
+  background: var(--vj-surface-2);
+}
+
+.vj-form-card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: var(--vj-surface);
+  border: 1px solid var(--vj-border);
+  border-radius: var(--vj-radius-l);
+  box-shadow: var(--vj-shadow-s);
+}
+
+.vj-json-cell {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8rem;
+  color: var(--vj-text-2);
+}

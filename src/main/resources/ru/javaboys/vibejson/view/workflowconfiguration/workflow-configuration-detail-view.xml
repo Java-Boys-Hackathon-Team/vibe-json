@@ -16,17 +16,18 @@
         <action id="saveAction" type="detail_saveClose"/>
         <action id="closeAction" type="detail_close"/>
     </actions>
-    <layout>
-        <formLayout id="form" dataContainer="workflowConfigurationDc">
+    <layout classNames="vj-crud-view">
+        <h2 id="pageTitle" text="msg://workflowConfigurationDetailView.title" classNames="vj-page-title"/>
+        <formLayout id="form" dataContainer="workflowConfigurationDc" classNames="vj-form-card">
             <responsiveSteps>
                 <responsiveStep minWidth="0" columns="1"/>
                 <responsiveStep minWidth="40em" columns="2"/>
             </responsiveSteps>
-            <textArea id="json_pathField" height="9.5em" property="jsonPath"/>
-            <textArea id="jsonField" height="9.5em" property="json"/>
+            <textField id="json_pathField" property="jsonPath" colspan="2" placeholder="$.compiled.activities[0]"/>
+            <codeEditor id="jsonField" height="24em" property="json" mode="JSON" theme="ONE_DARK" showPrintMargin="false" colspan="2"/>
         </formLayout>
         <hbox id="detailActions">
-            <button id="saveAndCloseButton" action="saveAction"/>
+            <button id="saveAndCloseButton" action="saveAction" themeNames="primary"/>
             <button id="closeButton" action="closeAction"/>
         </hbox>
     </layout>

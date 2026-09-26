@@ -16,8 +16,9 @@
     <facets>
         <dataLoadCoordinator auto="true"/>
     </facets>
-    <layout>
-        <formLayout id="form" dataContainer="userDc">
+    <layout classNames="vj-crud-view">
+        <h2 id="pageTitle" text="msg://UserDetailView.title" classNames="vj-page-title"/>
+        <formLayout id="form" dataContainer="userDc" classNames="vj-form-card">
             <textField id="usernameField" property="username" readOnly="true"/>
             <passwordField id="passwordField"
                            label="msg://ru.javaboys.vibejson.entity/User.password"
@@ -34,7 +35,7 @@
             <checkbox id="activeField" property="active"/>
         </formLayout>
         <hbox id="detailActions">
-            <button id="saveAndCloseButton" action="saveAction"/>
+            <button id="saveAndCloseButton" action="saveAction" themeNames="primary"/>
             <button id="closeButton" action="closeAction"/>
         </hbox>
     </layout>

@@ -1,5 +1,293 @@
-/* Predefined styles for the LoginView */
+/* Экран входа: слева промо-блок продукта, справа форма. */
 
-.jmix-login-main-layout {
-  background-color: var(--lumo-shade-5pct);
+.vj-login {
+  background: var(--vj-bg);
+  height: 100%;
+}
+
+.vj-login-shell {
+  min-height: 100%;
+}
+
+.vj-login-hero {
+  position: relative;
+  flex: 1 1 58%;
+  min-width: 0;
+  overflow: hidden;
+  background: #0c0b1d;
+  color: #ecebff;
+}
+
+.vj-hero {
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  gap: 2rem;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, .06) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.vj-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: .55;
+  pointer-events: none;
+}
+
+.vj-hero-orb-1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  left: -80px;
+  background: #7c3aed;
+  animation: vj-float 14s ease-in-out infinite;
+}
+
+.vj-hero-orb-2 {
+  width: 380px;
+  height: 380px;
+  bottom: -140px;
+  right: -60px;
+  background: #0891b2;
+  animation: vj-float 18s ease-in-out infinite reverse;
+}
+
+@keyframes vj-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.08); }
+}
+
+.vj-hero-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.vj-hero-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px -6px rgba(139, 92, 246, .8);
+}
+
+.vj-hero-brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.vj-hero-main {
+  position: relative;
+  margin-top: auto;
+  max-width: 40rem;
+}
+
+.vj-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem .8rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 500;
+  color: #d9d6ff;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.vj-hero-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, .18);
+}
+
+.vj-hero-title {
+  margin: 1.1rem 0 1rem;
+  font-size: clamp(1.9rem, 3.3vw, 3rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -.035em;
+  color: #fff;
+}
+
+.vj-hero-title .vj-gradient-text {
+  background: linear-gradient(90deg, #c4b5fd 0%, #818cf8 45%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.vj-hero-lead {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: rgba(236, 235, 255, .72);
+}
+
+.vj-hero-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: .75rem;
+  margin-top: 1.75rem;
+}
+
+.vj-hero-feature {
+  display: flex;
+  gap: .75rem;
+  padding: .85rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .045);
+  border: 1px solid rgba(255, 255, 255, .08);
+  backdrop-filter: blur(6px);
+}
+
+.vj-hero-feature b {
+  display: block;
+  font-size: .88rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.vj-hero-feature span {
+  display: block;
+  margin-top: .15rem;
+  font-size: .78rem;
+  color: rgba(236, 235, 255, .6);
+}
+
+.vj-hero-feature-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(139, 92, 246, .35), rgba(6, 182, 212, .3));
+  color: #fff;
+}
+
+.vj-hero-feature-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.vj-hero-code {
+  position: relative;
+  margin-bottom: auto;
+  max-width: 40rem;
+  border-radius: 14px;
+  background: rgba(10, 10, 25, .72);
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .6);
+  overflow: hidden;
+  animation: vj-rise .8s cubic-bezier(.2, .8, .2, 1) both .15s;
+}
+
+@keyframes vj-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.vj-hero-code-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: .6rem .9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  font-size: .75rem;
+  color: rgba(236, 235, 255, .5);
+}
+
+.vj-hero-code-bar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .15);
+}
+
+.vj-hero-code-bar i:nth-child(1) { background: #f87171; }
+.vj-hero-code-bar i:nth-child(2) { background: #fbbf24; }
+.vj-hero-code-bar i:nth-child(3) { background: #34d399; }
+
+.vj-hero-code-bar span {
+  margin-left: .5rem;
+}
+
+.vj-hero-code pre {
+  margin: 0;
+  padding: 1rem 1.1rem 1.2rem;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8rem;
+  line-height: 1.65;
+  color: #cbd5e1;
+  overflow-x: auto;
+}
+
+.vj-hero-code .k { color: #a5b4fc; }
+.vj-hero-code .s { color: #6ee7b7; }
+.vj-hero-code .p { color: #f0abfc; }
+
+/* Правая часть с формой. */
+.vj-login-panel {
+  flex: 1 1 42%;
+  min-width: min(100%, 26rem);
+  box-sizing: border-box;
+  padding: 2rem;
+  background: var(--vj-bg);
+}
+
+.vj-login-panel vaadin-login-form {
+  width: 100%;
+  max-width: 24rem;
+}
+
+vaadin-login-form-wrapper {
+  background: transparent;
+}
+
+vaadin-login-form-wrapper::part(form) {
+  padding: 2.25rem 2rem 1.5rem;
+  border-radius: var(--vj-radius-l);
+  background: var(--vj-surface);
+  border: 1px solid var(--vj-border);
+  box-shadow: var(--vj-shadow-m);
+}
+
+vaadin-login-form-wrapper::part(form-title) {
+  margin: 0 0 .25rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.vj-login-hint {
+  margin-top: 1rem;
+  font-size: .8rem;
+  color: var(--vj-text-3);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .vj-login-shell {
+    flex-direction: column;
+  }
+
+  .vj-login-hero {
+    flex: 0 0 auto;
+  }
+
+  .vj-hero-code,
+  .vj-hero-features {
+    display: none;
+  }
+
+  .vj-hero-main {
+    margin-top: 1rem;
+  }
 }

@@ -1,20 +1,60 @@
-/* Predefined styles for the MainView */
+/*
+ * Главный экран. Меню - узкая панель-рельс: иконка раздела и короткая подпись
+ * под ней. Так основному экрану (чату со схемой) остаётся максимум ширины.
+ */
+
+vaadin-app-layout {
+  --vaadin-app-layout-drawer-width: 5.75rem;
+  background: var(--vj-bg);
+}
+
+vaadin-app-layout::part(navbar) {
+  background: color-mix(in srgb, var(--vj-bg) 82%, transparent);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid var(--vj-border);
+  box-shadow: none;
+  min-height: 52px;
+}
+
+/* На широких экранах шапка не нужна: меню всегда на виду, заголовок - в экране. */
+@media (min-width: 801px) {
+  vaadin-app-layout::part(navbar) {
+    display: none;
+  }
+}
+
+vaadin-app-layout::part(drawer) {
+  background: var(--vj-surface);
+  border-inline-end: 1px solid var(--vj-border);
+  box-shadow: none;
+}
+
+@media (max-width: 800px) {
+  vaadin-app-layout {
+    --vaadin-app-layout-drawer-width: 16rem;
+  }
+}
 
 .jmix-main-view-header {
   box-sizing: border-box;
   display: flex;
-  height: var(--lumo-size-xl);
+  height: 52px;
   align-items: center;
   width: 100%;
+  gap: var(--lumo-space-xs);
 }
 
 .jmix-main-view-drawer-toggle {
-  color: var(--lumo-secondary-text-color);
+  color: var(--vj-text-2);
 }
 
 .jmix-main-view-title {
   margin: 0;
-  font-size: var(--lumo-font-size-l);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--vj-text);
 }
 
 .jmix-main-view-section {
@@ -27,40 +67,137 @@
 
 .jmix-main-view-application-title {
   display: flex;
-  align-items: center;
-  height: var(--lumo-size-xl);
+  justify-content: center;
   margin: 0;
-  padding-left: var(--lumo-space-m);
-  padding-right: var(--lumo-space-m);
-  font-size: var(--lumo-font-size-m);
-}
-
-.jmix-main-view-application-title-base-link {
-  color: var(--lumo-header-text-color);
+  padding: 1rem 0 .75rem;
 }
 
 .jmix-main-view-application-title-base-link:hover {
   text-decoration: none;
 }
 
+.vj-brand {
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  transition: transform .2s ease;
+}
+
+.vj-brand:hover {
+  transform: rotate(-6deg) scale(1.05);
+}
+
+.vj-brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  box-shadow: 0 8px 20px -8px rgba(99, 102, 241, .8);
+}
+
 .jmix-main-view-navigation {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid;
-  border-color: var(--lumo-contrast-10pct);
   flex-grow: 1;
   overflow: auto;
+  padding: .5rem .45rem;
+}
+
+.jmix-main-view-navigation .jmix-list-menu {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  margin: 0;
+  padding: 0;
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  padding: .55rem .15rem .5rem;
+  border-radius: 12px;
+  color: var(--vj-text-3);
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link vaadin-icon {
+  box-sizing: border-box;
+  width: 40px;
+  height: 32px;
+  padding: 7px 11px;
+  border-radius: 10px;
+  margin: 0;
+  color: inherit;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link .link-text {
+  font-size: .66rem;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--vj-text-2);
+  overflow-wrap: anywhere;
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link:hover {
+  color: var(--vj-text);
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link:hover vaadin-icon {
+  background: var(--vj-surface-2);
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link[highlight] vaadin-icon {
+  color: #fff;
+  background: var(--vj-gradient);
+  box-shadow: 0 6px 14px -6px rgba(99, 102, 241, .8);
+}
+
+.jmix-main-view-navigation .jmix-menu-item-link[highlight] .link-text {
+  color: var(--lumo-primary-text-color);
+}
+
+/* На узких экранах меню выезжает целиком - там подписи обычные, в строку. */
+@media (max-width: 800px) {
+  .jmix-main-view-navigation .jmix-menu-item-link {
+    flex-direction: row;
+    gap: .6rem;
+    padding: .4rem .5rem;
+  }
+
+  .jmix-main-view-navigation .jmix-menu-item-link .link-text {
+    font-size: .88rem;
+    text-align: start;
+  }
 }
 
 .jmix-main-view-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: var(--lumo-space-s);
-  margin-top: var(--lumo-space-s);
-  padding: var(--lumo-space-xs) var(--lumo-space-m);
-  gap: var(--lumo-space-m);
+  gap: .5rem;
+  padding: .75rem 0 1rem;
+  border-top: 1px solid var(--vj-border);
 }
 
-.jmix-main-view-footer .jmix-user-indicator {
-  flex-grow: 1;
+.vj-rail-button {
+  margin: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--vj-text-3);
+}
+
+.vj-rail-button:hover {
+  color: var(--lumo-primary-text-color);
+  background: var(--lumo-primary-color-10pct);
+}
+
+.vj-rail-user vaadin-avatar {
+  --vaadin-avatar-size: 34px;
+  font-weight: 600;
+  box-shadow: 0 0 0 2px var(--vj-surface), 0 0 0 4px var(--lumo-primary-color-10pct);
 }

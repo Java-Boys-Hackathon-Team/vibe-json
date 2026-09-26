@@ -5,6 +5,9 @@
         <action id="logoutAction" type="logout"/>
     </actions>
     <appLayout>
+        <!-- Шапка нужна только на узких экранах: там меню выезжает поверх
+             содержимого и открывается кнопкой. На широких экранах её скрывает
+             тема, а заголовок показывает сам экран. -->
         <navigationBar>
             <header id="header" classNames="jmix-main-view-header">
                 <drawerToggle id="drawerToggle"
@@ -13,25 +16,6 @@
                               ariaLabel="msg://drawerToggle.ariaLabel"/>
                 <h1 id="viewTitle" classNames="jmix-main-view-title"/>
             </header>
-            <dropdownButton id="themeSwitcher"
-                            text="Theme" icon="ADJUST"
-                            classNames="ms-auto me-m"
-                            dropdownIndicatorVisible="false">
-                <items>
-                    <actionItem id="systemThemeItem">
-                        <action id="systemThemeAction"
-                                text="System" icon="ADJUST"/>
-                    </actionItem>
-                    <actionItem id="lightThemeItem">
-                        <action id="lightThemeAction"
-                                text="Light" icon="SUN_O"/>
-                    </actionItem>
-                    <actionItem id="darkThemeItem">
-                        <action id="darkThemeAction"
-                                text="Dark" icon="MOON_O"/>
-                    </actionItem>
-                </items>
-            </dropdownButton>
         </navigationBar>
         <drawerLayout>
             <section id="section" classNames="jmix-main-view-section">
@@ -39,8 +23,10 @@
                     classNames="jmix-main-view-application-title">
                     <anchor id="baseLink"
                             href="."
-                            text="msg://applicationTitle.text"
-                            classNames="jmix-main-view-application-title-base-link"/>
+                            title="msg://applicationTitle.text"
+                            classNames="jmix-main-view-application-title-base-link vj-brand">
+                        <image id="brandLogo" resource="icons/logo.svg" classNames="vj-brand-logo"/>
+                    </anchor>
                 </h2>
                 <nav id="navigation"
                      classNames="jmix-main-view-navigation"
@@ -48,10 +34,17 @@
                     <listMenu id="menu"/>
                 </nav>
                 <footer id="footer" classNames="jmix-main-view-footer">
-                    <userIndicator id="userIndicator"/>
+                    <button id="themeToggle"
+                            icon="ADJUST"
+                            title="msg://themeToggle.title"
+                            themeNames="tertiary icon"
+                            classNames="vj-rail-button"/>
+                    <div id="userBox" classNames="vj-rail-user"/>
                     <button id="logoutButton"
                             action="logoutAction"
-                            classNames="jmix-logout-button"/>
+                            title="msg://logout.title"
+                            themeNames="tertiary icon"
+                            classNames="jmix-logout-button vj-rail-button"/>
                 </footer>
             </section>
         </drawerLayout>
