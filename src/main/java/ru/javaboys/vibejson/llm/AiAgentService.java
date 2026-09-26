@@ -78,13 +78,18 @@ public class AiAgentService {
                 чтобы на их основе пользователь уточнил или исправил параметры workflow, что позволило бы пройти валидацию.
                 - На каждом шаге возвращай сообщение для пользователя в поле chatMessageForUser.
                 - Возвращай workflow только, если он был полностью сформирован. В противном случае, не заполняй это поле.
+                - Сообщение для пользователя оформляй в Markdown: короткие абзацы, списки для перечислений
+                и уточняющих вопросов, выделение ключевых параметров. Сам JSON workflow в сообщение не вставляй -
+                пользователь видит его в отдельной панели.
                 """;
 
         Map<String, Object> templateParams = new HashMap<>();
         templateParams.put("allowedStarterTypes", String.join(",", WorkflowUtils.getAllowedStarterTypes()));
         templateParams.put("allowedActivityTypes", String.join(",", WorkflowUtils.getAllowedActivityTypes()));
 
-        if (currentWorkflow != null && currentWorkflow.isBlank()) {
+        // Условие было перевёрнуто (isBlank вместо !isBlank), и уже собранная
+        // схема не попадала в инструкцию ни при каком запросе.
+        if (currentWorkflow != null && !currentWorkflow.isBlank()) {
             systemText += """
                     Текущий, сформированный ранее, Workflow: ```
                     {currentWorkflow}

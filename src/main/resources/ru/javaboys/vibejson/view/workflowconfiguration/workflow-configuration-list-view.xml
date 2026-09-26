@@ -25,13 +25,17 @@
         <action id="selectAction" type="lookup_select"/>
         <action id="discardAction" type="lookup_discard"/>
     </actions>
-    <layout>
+    <layout classNames="vj-crud-view">
+        <div id="pageHeader" classNames="vj-page-header">
+            <h2 id="pageTitle" text="msg://workflowConfigurationListView.title" classNames="vj-page-title"/>
+            <span id="pageSubtitle" text="msg://workflowConfigurationListView.subtitle" classNames="vj-page-subtitle"/>
+        </div>
         <genericFilter id="genericFilter"
                        dataLoader="workflowConfigurationsDl">
             <properties include=".*"/>
         </genericFilter>
         <hbox id="buttonsPanel" classNames="buttons-panel">
-            <button id="createButton" action="workflowConfigurationsDataGrid.createAction"/>
+            <button id="createButton" action="workflowConfigurationsDataGrid.createAction" themeNames="primary"/>
             <button id="editButton" action="workflowConfigurationsDataGrid.editAction"/>
             <button id="removeButton" action="workflowConfigurationsDataGrid.removeAction"/>
             <simplePagination id="pagination" dataLoader="workflowConfigurationsDl"/>

@@ -1,108 +1,160 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
       title="msg://ru.javaboys.vibejson.view.vibejsonchat/vibeJsonChatView.title">
-    <data>
-        <collection id="chatMessagesDc" class="ru.javaboys.vibejson.entity.ChatMessage">
-            <fetchPlan extends="_base"/>
-            <loader id="chatMessagesDl" readOnly="true">
-                <query>
-                    <![CDATA[select e from ChatMessage e
-                    where e.conversation = :conversation  ]]>
-                </query>
-            </loader>
-        </collection>
-        <collection id="conversationDc" class="ru.javaboys.vibejson.entity.Conversation">
-            <loader id="conversationDl" readOnly="true">
-                <query>
-                    <![CDATA[select e from Conversation e order by e.createdDate desc]]>
-                </query>
-            </loader>
-            <fetchPlan extends="_base"/>
-        </collection>
-    </data>
+    <layout padding="false" spacing="false" classNames="vj-chat-view">
+        <hbox id="chatShell" classNames="vj-chat-shell" width="100%" height="100%" padding="false" spacing="false">
 
-    <layout>
-        <split id="mainHBox" width="100%" height="100%">
-            <vbox id="leftConversationPanel" width="25%" height="100%">
-                <comboBox id="llmComboBox"
-                          width="100%"
-                          label="Выбрать алгоритм"
-                          required="true"
-                          optionsEnum="ru.javaboys.vibejson.model.LLMModel"/>
-
-                <button id="createConversation"
-                        text="Новый чат" width="100%"/>
-
-                <dataGrid id="conversationsDataGrid" dataContainer="conversationDc" minWidth="100px" width="100%"
-                          height="100%">
-                    <actions showInContextMenuEnabled="false">
-                        <action id="read" type="list_read"/>
-                        <action id="edit" type="list_edit"/>
-                        <action id="remove" type="list_remove"/>
-                    </actions>
-                    <columns>
-                        <column property="title"/>
-                        <column property="createdDate"/>
-                    </columns>
-                    <contextMenu id="conversationContextMenu">
-                        <item id="renameItem" text="Переименовать" action="conversationsDataGrid.edit"/>
-                        <separator/>
-                        <item id="removeItem" text="Удалить" action="conversationsDataGrid.remove"/>
-                    </contextMenu>
-                </dataGrid>
+            <!-- Беседы пользователя -->
+            <vbox id="conversationsPanel" classNames="vj-conv-panel" padding="false" spacing="false" height="100%">
+                <hbox id="conversationsHeader" classNames="vj-conv-header" width="100%" padding="false"
+                      alignItems="CENTER">
+                    <span id="conversationsCaption" text="msg://conversations.caption" classNames="vj-panel-caption"/>
+                    <button id="createConversation"
+                            text="msg://newChat"
+                            icon="PLUS"
+                            themeNames="primary small"
+                            classNames="ms-auto vj-new-chat"/>
+                </hbox>
+                <textField id="conversationSearch"
+                           width="100%"
+                           classNames="vj-conv-search"
+                           themeNames="small"
+                           clearButtonVisible="true"
+                           valueChangeMode="EAGER"
+                           placeholder="msg://conversationSearch.placeholder">
+                    <prefix>
+                        <icon icon="SEARCH"/>
+                    </prefix>
+                </textField>
+                <scroller id="conversationScroller" width="100%" classNames="vj-conv-scroller"
+                          scrollBarsDirection="VERTICAL">
+                    <div id="conversationList" classNames="vj-conv-list"/>
+                </scroller>
             </vbox>
 
-            <split id="chatVBox" width="75%" height="100%">
-                <vbox width="60%" height="100%" spacing="true">
-                    <scroller id="chatScroller"
-                              width="100%" height="70%"
-                              flexGrow="1"
-                              scrollBarsDirection="VERTICAL">
+            <split id="workSplit" width="100%" height="100%" splitterPosition="55" classNames="vj-work-split">
 
-                        <textArea id="chatTextArea"
-                                  width="100%" height="100%"
-                                  autogrow="false"
-                                  placeholder="msg://chatTextArea1.placeholder"/>
+                <!-- Диалог с ассистентом -->
+                <vbox id="chatPanel" classNames="vj-chat-panel" padding="false" spacing="false" height="100%">
+                    <hbox id="chatHeader" classNames="vj-chat-header" width="100%" padding="false" alignItems="CENTER">
+                        <button id="toggleConversations"
+                                icon="MENU"
+                                themeNames="tertiary icon"
+                                classNames="vj-icon-button"
+                                title="msg://toggleConversations.title"/>
+                        <div id="chatHeading" classNames="vj-chat-heading">
+                            <span id="chatTitle" classNames="vj-chat-title"/>
+                            <span id="chatSubtitle" classNames="vj-chat-subtitle"/>
+                        </div>
+                        <comboBox id="llmComboBox"
+                                  classNames="ms-auto vj-model-select"
+                                  themeNames="small"
+                                  width="13em"
+                                  title="msg://llmComboBox.title"
+                                  allowCustomValue="false">
+                            <prefix>
+                                <icon icon="LIGHTBULB"/>
+                            </prefix>
+                        </comboBox>
+                    </hbox>
+
+                    <scroller id="chatScroller" width="100%" classNames="vj-chat-scroller"
+                              scrollBarsDirection="VERTICAL">
+                        <div id="messageList" classNames="vj-message-list"/>
                     </scroller>
 
-                    <hbox id="promptInputHBox"
-                          width="100%"
-                          height="30%">
-                        <textArea id="promptInput"
-                                  width="100%"
-                                  placeholder="Введите текст…">
-                        </textArea>
-                        <vbox width="15%" height="100%" spacing="false">
+                    <div id="composer" classNames="vj-composer">
+                        <div id="composerBox" classNames="vj-composer-box">
+                            <textArea id="promptInput"
+                                      width="100%"
+                                      classNames="vj-prompt"
+                                      maxHeight="12em"
+                                      valueChangeMode="EAGER"
+                                      placeholder="msg://promptInput.placeholder"/>
                             <button id="sendButton"
-                                    text="Send"/>
-                            <image id="imgSlider"
-                                   maxWidth="60px"
-                                   maxHeight="60px"
-                                   resource="icons/slider.gif"/>
-                        </vbox>
-                    </hbox>
+                                    icon="PAPERPLANE"
+                                    themeNames="primary icon"
+                                    classNames="vj-send-button"
+                                    title="msg://sendButton.title"/>
+                        </div>
+                        <span id="composerHint" text="msg://composer.hint" classNames="vj-composer-hint"/>
+                    </div>
                 </vbox>
 
-                <vbox width="40%" height="100%" spacing="true">
-                    <hbox id="jsonTextAreaButtons" width="100%" spacing="true">
-                        <button id="jsonTextAreaEdit"
-                                text="Редактировать"
-                                title="Редактировать"
-                                icon="EDIT"/>
-                        <button id="jsonTextAreaCopy"
-                                text="Скопировать"
-                                title="Скопировать в буфер обмена"
-                                icon="COPY"/>
+                <!-- Сформированная схема -->
+                <vbox id="workflowPanel" classNames="vj-wf-panel" padding="false" spacing="false" height="100%">
+                    <hbox id="workflowHeader" classNames="vj-wf-header" width="100%" padding="false"
+                          alignItems="CENTER">
+                        <div id="workflowHeading" classNames="vj-wf-heading">
+                            <span id="workflowTitle" classNames="vj-wf-title"/>
+                            <div id="workflowBadges" classNames="vj-wf-badges"/>
+                        </div>
+                        <hbox id="workflowActions" classNames="ms-auto vj-wf-actions" padding="false"
+                              spacing="false">
+                            <button id="jsonTextAreaCopy"
+                                    icon="COPY_O"
+                                    themeNames="tertiary icon"
+                                    classNames="vj-icon-button"
+                                    title="msg://copyJson.title"/>
+                            <button id="jsonDownload"
+                                    icon="DOWNLOAD_ALT"
+                                    themeNames="tertiary icon"
+                                    classNames="vj-icon-button"
+                                    title="msg://downloadJson.title"/>
+                            <button id="jsonTextAreaEdit"
+                                    icon="EDIT"
+                                    themeNames="tertiary icon"
+                                    classNames="vj-icon-button"
+                                    title="msg://editJson.title"/>
+                        </hbox>
                     </hbox>
-                    <codeEditor id="jsonTextArea"
-                                width="100%"
-                                height="100%"
-                                flexGrow="1"
-                                mode="JSON"
-                                label="msg://jsonCodeEditor.label"
-                                readOnly="true"/>
+
+                    <div id="workflowTabs" classNames="vj-segmented">
+                        <button id="diagramTabButton"
+                                text="msg://diagramTab"
+                                icon="SITEMAP"
+                                themeNames="tertiary small"
+                                classNames="vj-segment"/>
+                        <button id="jsonTabButton"
+                                text="msg://jsonTab"
+                                icon="CODE"
+                                themeNames="tertiary small"
+                                classNames="vj-segment"/>
+                    </div>
+
+                    <div id="workflowBody" classNames="vj-wf-body">
+                        <html id="workflowEmpty">
+                            <content><![CDATA[
+<div class="vj-wf-empty">
+  <div class="vj-wf-empty-art">
+    <svg viewBox="0 0 120 96" fill="none">
+      <rect x="38" y="6" width="44" height="18" rx="9" class="a"/>
+      <path d="M60 24v14" class="l"/>
+      <rect x="30" y="38" width="60" height="20" rx="6" class="b"/>
+      <path d="M60 58v8M60 66H26v6M60 66h34v6" class="l"/>
+      <rect x="6" y="72" width="40" height="18" rx="6" class="c"/>
+      <rect x="74" y="72" width="40" height="18" rx="6" class="c"/>
+    </svg>
+  </div>
+  <div class="vj-wf-empty-title">Схема ещё не собрана</div>
+  <div class="vj-wf-empty-text">Опишите процесс в чате - как только агент соберёт workflow, здесь появятся его диаграмма и JSON.</div>
+</div>
+                            ]]></content>
+                        </html>
+                        <codeEditor id="jsonTextArea"
+                                    width="100%"
+                                    height="100%"
+                                    mode="JSON"
+                                    theme="ONE_DARK"
+                                    fontSize="13px"
+                                    showPrintMargin="false"
+                                    highlightActiveLine="false"
+                                    classNames="vj-json-editor"
+                                    readOnly="true"
+                                    visible="false"/>
+                    </div>
                 </vbox>
             </split>
-        </split>
+        </hbox>
     </layout>
 </view>

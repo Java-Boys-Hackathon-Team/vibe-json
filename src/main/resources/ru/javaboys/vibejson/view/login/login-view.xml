@@ -2,19 +2,69 @@
 <view xmlns="http://jmix.io/schema/flowui/view"
       focusComponent="login"
       title="msg://LoginView.title">
-    <layout justifyContent="CENTER" alignItems="CENTER" classNames="jmix-login-main-layout">
-        <loginForm id="login"
-                   forgotPasswordButtonVisible="false">
-            <form title="msg://loginForm.headerTitle"
-                  username="msg://loginForm.username"
-                  password="msg://loginForm.password"
-                  rememberMe="msg://loginForm.rememberMe"
-                  submit="msg://loginForm.submit"
-                  forgotPassword="msg://loginForm.forgotPassword"/>
-            <errorMessage title="msg://loginForm.errorTitle"
-                          message="msg://loginForm.badCredentials"
-                          username="msg://loginForm.errorUsername"
-                          password="msg://loginForm.errorPassword"/>
-        </loginForm>
+    <layout padding="false" spacing="false" classNames="jmix-login-main-layout vj-login">
+        <hbox id="loginShell" width="100%" height="100%" padding="false" spacing="false" classNames="vj-login-shell">
+            <div id="heroPanel" classNames="vj-login-hero">
+                <html id="heroContent">
+                    <content><![CDATA[
+<div class="vj-hero">
+  <div class="vj-hero-orb vj-hero-orb-1"></div>
+  <div class="vj-hero-orb vj-hero-orb-2"></div>
+  <div class="vj-hero-top">
+    <img src="icons/logo.svg" alt="" class="vj-hero-logo">
+    <span class="vj-hero-brand">Vibe JSON</span>
+  </div>
+  <div class="vj-hero-main">
+    <div class="vj-hero-badge"><span class="vj-hero-badge-dot"></span>AI Schema Builder · МТС True Tech Hack</div>
+    <h1 class="vj-hero-title">Опишите процесс словами -<br><span class="vj-gradient-text">получите готовый workflow</span></h1>
+    <p class="vj-hero-lead">ИИ-агент превращает описание интеграционного бизнес-процесса в валидную JSON-схему: уточняет недостающие параметры, проверяет результат и показывает его наглядной диаграммой.</p>
+    <div class="vj-hero-features">
+      <div class="vj-hero-feature">
+        <div class="vj-hero-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div><b>Диалог вместо спецификаций</b><span>Агент сам задаёт уточняющие вопросы</span></div>
+      </div>
+      <div class="vj-hero-feature">
+        <div class="vj-hero-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div>
+        <div><b>Автоматическая валидация</b><span>Схема проверяется до того, как попадёт к вам</span></div>
+      </div>
+      <div class="vj-hero-feature">
+        <div class="vj-hero-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4a3 3 0 0 1 3 3V14"/></svg></div>
+        <div><b>Процесс как на ладони</b><span>Диаграмма стартеров, шагов и ветвлений</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="vj-hero-code">
+    <div class="vj-hero-code-bar"><i></i><i></i><i></i><span>workflow.json</span></div>
+<pre><span class="p">{</span>
+  <span class="k">"name"</span>: <span class="s">"order-sync"</span>,
+  <span class="k">"details"</span>: { <span class="k">"starters"</span>: [{ <span class="k">"type"</span>: <span class="s">"kafka_consumer"</span> }] },
+  <span class="k">"compiled"</span>: { <span class="k">"activities"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"enrich"</span>, <span class="k">"type"</span>: <span class="s">"workflow_call"</span>, <span class="k">"transition"</span>: <span class="s">"route"</span> },
+    { <span class="k">"id"</span>: <span class="s">"route"</span>,  <span class="k">"type"</span>: <span class="s">"switch"</span> }
+  ] }
+<span class="p">}</span></pre>
+  </div>
+</div>
+                    ]]></content>
+                </html>
+            </div>
+            <vbox id="formPanel" classNames="vj-login-panel" justifyContent="CENTER" alignItems="CENTER" height="100%">
+                <loginForm id="login"
+                           localesVisible="false"
+                           forgotPasswordButtonVisible="false">
+                    <form title="msg://loginForm.headerTitle"
+                          username="msg://loginForm.username"
+                          password="msg://loginForm.password"
+                          rememberMe="msg://loginForm.rememberMe"
+                          submit="msg://loginForm.submit"
+                          forgotPassword="msg://loginForm.forgotPassword"/>
+                    <errorMessage title="msg://loginForm.errorTitle"
+                                  message="msg://loginForm.badCredentials"
+                                  username="msg://loginForm.errorUsername"
+                                  password="msg://loginForm.errorPassword"/>
+                </loginForm>
+                <span id="loginHint" text="msg://loginForm.hint" classNames="vj-login-hint"/>
+            </vbox>
+        </hbox>
     </layout>
 </view>
