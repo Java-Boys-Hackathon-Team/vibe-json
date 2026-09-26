@@ -28,7 +28,8 @@
 - Компактное боковое меню, светлая и тёмная темы, адаптация под узкие экраны.
 
 Диаграмма - веб-компонент на Lit (`src/main/frontend/components/vj-workflow-diagram.js`),
-стили темы - `src/main/frontend/themes/vibe-json`.
+стили темы - `src/main/frontend/themes/vibe-json`. Обобщённый опыт редизайна для
+других проектов на Jmix - в [`docs/jmix-ui-redesign.md`](docs/jmix-ui-redesign.md).
 
 ## 🛠️ Технологический стек
 
