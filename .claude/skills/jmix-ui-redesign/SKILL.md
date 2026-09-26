@@ -123,3 +123,17 @@ description: Редизайн интерфейса приложений на Jmi
 | `assets/lit-component-template.js` | заготовка веб-компонента |
 | `scripts/screenshots.cjs` | скриншоты через Playwright |
 | `scripts/check-icons.sh` | проверка имён иконок |
+
+## Установка в другие проекты и агенты
+
+Скилл в формате Agent Skills (agentskills.io) и не привязан к конкретному агенту.
+Разные агенты ищут скиллы в разных папках:
+
+| Агент | В репозитории | У пользователя |
+|---|---|---|
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
+| Codex и другие агенты стандарта | `.agents/skills/` | `~/.agents/skills/` |
+
+Держи одну копию, а во второе место ставь символическую ссылку, например
+`.agents/skills/jmix-ui-redesign -> ../../.claude/skills/jmix-ui-redesign`.
+На Windows ссылки из git работают только при `git config core.symlinks true`.
