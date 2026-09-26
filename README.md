@@ -29,7 +29,8 @@
 
 Диаграмма - веб-компонент на Lit (`src/main/frontend/components/vj-workflow-diagram.js`),
 стили темы - `src/main/frontend/themes/vibe-json`. Обобщённый опыт редизайна для
-других проектов на Jmix - в [`docs/jmix-ui-redesign.md`](docs/jmix-ui-redesign.md).
+других проектов на Jmix - в [`docs/jmix-ui-redesign.md`](docs/jmix-ui-redesign.md), он же оформлен
+скиллом Claude Code [`.claude/skills/jmix-ui-redesign`](.claude/skills/jmix-ui-redesign/SKILL.md).
 
 ## 🛠️ Технологический стек
 
